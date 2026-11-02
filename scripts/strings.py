@@ -367,7 +367,21 @@ S = {
         "Anda boleh membagikan dan mengubahnya sesuai ketentuannya. Tanpa jaminan apa pun.",
     ),
     "aboutSourceCode": ("Source Code", "Kode Sumber"),
-    "aboutSponsor": ("Sponsor on GitHub", "Sponsori di GitHub"),
+    "sponsorTitle": ("Sponsor", "Sponsor"),
+    "sponsorFooter": (
+        "ReCopy is free and open source, built and maintained in spare time. Sponsoring keeps it updated and free for "
+        "everyone. Thank you!",
+        "ReCopy gratis dan open source, dibuat dan dirawat di waktu luang. Dukungan Anda membuatnya terus diperbarui dan "
+        "tetap gratis untuk semua. Terima kasih!",
+    ),
+    "sponsorSupport": ("Support", "Dukung"),
+    "sponsorGitHub": ("GitHub Sponsors", "GitHub Sponsors"),
+    "sponsorGitHubSubtitle": ("Monthly or one-time", "Bulanan atau sekali"),
+    "sponsorBuyMeACoffee": ("Buy Me a Coffee", "Buy Me a Coffee"),
+    "sponsorKofi": ("Ko-fi", "Ko-fi"),
+    "sponsorPayPal": ("PayPal", "PayPal"),
+    "sponsorSaweria": ("Saweria", "Saweria"),
+    "sponsorSaweriaSubtitle": ("For supporters in Indonesia", "Untuk pendukung di Indonesia"),
     "supportFeedback": ("Send Feedback", "Kirim Masukan"),
     "supportBugReport": ("Report a Bug", "Laporkan Bug"),
     "supportWebsite": ("Website", "Situs Web"),

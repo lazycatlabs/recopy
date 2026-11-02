@@ -12,9 +12,6 @@ struct AboutSettingsPage: View {
             SettingsRow(L(.aboutSourceCode), symbol: "chevron.left.forwardslash.chevron.right") {
                 Link(L(.aboutSourceCode), destination: SupportLinks.sourceCode)
             }
-            SettingsRow(L(.aboutSponsor), symbol: "heart") {
-                Link(L(.aboutSponsor), destination: SupportLinks.sponsor).accessibilityIdentifier("settings.sponsor")
-            }
             if let url = SupportLinks.feedback() {
                 SettingsRow(L(.supportFeedback), symbol: "bubble.left") { Link(L(.supportFeedback), destination: url) }
             }
@@ -22,6 +19,14 @@ struct AboutSettingsPage: View {
                 SettingsRow(L(.supportBugReport), symbol: "ladybug") { Link(L(.supportBugReport), destination: url) }
             }
             SettingsRow(L(.supportWebsite), symbol: "safari") { Link(L(.supportWebsite), destination: SupportLinks.website) }
+        }
+        SettingsGroup(L(.sponsorTitle), footer: L(.sponsorFooter)) {
+            ForEach(Sponsor.allCases) { sponsor in
+                SettingsRow(sponsor.title, symbol: sponsor.symbol, subtitle: sponsor.subtitle) {
+                    Link(L(.sponsorSupport), destination: sponsor.url)
+                        .accessibilityIdentifier(sponsor == .github ? "settings.sponsor" : "settings.sponsor.\(sponsor.rawValue)")
+                }
+            }
         }
     }
 }

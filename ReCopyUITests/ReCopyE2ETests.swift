@@ -397,6 +397,7 @@ final class ReCopyE2ETests: XCTestCase {
         openSettingsPage("about", in: settings)
         XCTAssertTrue(element("settings.license").waitForExistence(timeout: timeout), "About links to the GPL-3.0 license")
         XCTAssertTrue(element("settings.sponsor").exists, "About links to GitHub Sponsors")
+        XCTAssertTrue(element("settings.sponsor.saweria").exists, "About lists every sponsor platform")
         screenshot(settings, "34-settings-about-license")
     }
 

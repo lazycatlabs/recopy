@@ -69,23 +69,6 @@
         }
       }
     },
-    "aboutSponsor": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sponsor on GitHub"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sponsori di GitHub"
-          }
-        }
-      }
-    },
     "aboutSubtitle": {
       "extractionState": "manual",
       "localizations": {
@@ -4200,6 +4183,176 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tidak ada"
+          }
+        }
+      }
+    },
+    "sponsorBuyMeACoffee": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buy Me a Coffee"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buy Me a Coffee"
+          }
+        }
+      }
+    },
+    "sponsorFooter": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ReCopy is free and open source, built and maintained in spare time. Sponsoring keeps it updated and free for everyone. Thank you!"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ReCopy gratis dan open source, dibuat dan dirawat di waktu luang. Dukungan Anda membuatnya terus diperbarui dan tetap gratis untuk semua. Terima kasih!"
+          }
+        }
+      }
+    },
+    "sponsorGitHub": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub Sponsors"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub Sponsors"
+          }
+        }
+      }
+    },
+    "sponsorGitHubSubtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monthly or one-time"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bulanan atau sekali"
+          }
+        }
+      }
+    },
+    "sponsorKofi": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ko-fi"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ko-fi"
+          }
+        }
+      }
+    },
+    "sponsorPayPal": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PayPal"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PayPal"
+          }
+        }
+      }
+    },
+    "sponsorSaweria": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saweria"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saweria"
+          }
+        }
+      }
+    },
+    "sponsorSaweriaSubtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For supporters in Indonesia"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Untuk pendukung di Indonesia"
+          }
+        }
+      }
+    },
+    "sponsorSupport": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Support"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dukung"
+          }
+        }
+      }
+    },
+    "sponsorTitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sponsor"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sponsor"
           }
         }
       }
