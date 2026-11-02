@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum AnnotationTool: String, CaseIterable, Identifiable {
-    case select, pen, highlighter, rectangle, ellipse, triangle, arrow, text, blur
+    case select, crop, pen, highlighter, rectangle, ellipse, triangle, arrow, text, blur
 
     var id: String { rawValue }
 
@@ -11,6 +11,7 @@ enum AnnotationTool: String, CaseIterable, Identifiable {
     var symbolName: String {
         switch self {
         case .select: "cursorarrow"
+        case .crop: "crop"
         case .pen: "pencil.tip"
         case .highlighter: "highlighter"
         case .rectangle: "rectangle"
@@ -25,6 +26,7 @@ enum AnnotationTool: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .select: L(.toolSelect)
+        case .crop: L(.toolCrop)
         case .pen: L(.toolPen)
         case .highlighter: L(.toolHighlighter)
         case .rectangle: L(.toolRectangle)
@@ -129,7 +131,7 @@ struct AnnotationMark: Identifiable {
         let lineWidth = lineWidth(in: size)
         var path = Path()
         switch tool {
-        case .select:
+        case .select, .crop:
             return
         case .text:
             let label = Text(text).font(.system(size: fontSize(in: size), weight: .semibold)).foregroundStyle(color)

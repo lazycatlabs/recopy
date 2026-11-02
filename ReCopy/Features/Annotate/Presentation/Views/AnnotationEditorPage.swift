@@ -1,7 +1,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// Draw and write on an image (pen, highlighter, shapes, arrow, text, blur), then keep the result as a new clipboard entry.
+/// Crop, rotate, draw and write on an image (pen, highlighter, shapes, arrow, text, blur), then keep the result as a new clipboard entry.
 struct AnnotationEditorPage: View {
     let image: NSImage
     /// Called with the annotated image as PNG, and its size in pixels.
@@ -22,11 +22,23 @@ struct AnnotationEditorPage: View {
     /// The text mark being typed, shown as a field on the canvas until it's committed.
     @State private var typing: AnnotationMark?
     @FocusState private var typingFocused: Bool
-    /// Earlier versions of `marks`, for undo.
-    @State private var history: [[AnnotationMark]] = []
+    /// The image after crops and rotations, which flatten the marks into it; nil until the first one.
+    @State private var edited: NSImage?
+    /// Crop tool: the area being dragged, as shares of the image's size.
+    @State private var cropArea: CGRect?
+    /// Earlier versions of the image and its marks, for undo.
+    @State private var history: [Snapshot] = []
     /// Select tool: the mark with handles around it, and the drag moving or resizing it.
     @State private var selection: AnnotationMark.ID?
     @State private var edit: Edit?
+
+    private struct Snapshot {
+        let marks: [AnnotationMark]
+        let image: NSImage?
+    }
+
+    /// The image being annotated: the original, or its cropped or rotated version.
+    private var picture: NSImage { edited ?? image }
 
     private struct Edit {
         let index: Int
@@ -55,6 +67,7 @@ struct AnnotationEditorPage: View {
             .onChange(of: tool) {
                 commitText()
                 selection = nil
+                cropArea = nil
             }
             .pickerStyle(.segmented)
             .labelsHidden()
@@ -84,7 +97,11 @@ struct AnnotationEditorPage: View {
             }
             sizeControl
             Spacer(minLength: 0)
-            Button(L(.actionUndo), systemImage: "arrow.uturn.backward") { marks = history.popLast() ?? [] }
+            Button(L(.annotateRotate), systemImage: "rotate.right") { transform { $0.rotatedClockwise() } }
+                .help(L(.annotateRotate))
+                .keyboardShortcut(typing == nil ? KeyboardShortcut("r") : nil)
+                .accessibilityIdentifier("annotate.rotate")
+            Button(L(.actionUndo), systemImage: "arrow.uturn.backward", action: undo)
                 .disabled(history.isEmpty)
                 .keyboardShortcut(typing == nil ? KeyboardShortcut("z") : nil)
             Button(L(.actionClear), systemImage: "trash") {
@@ -115,15 +132,16 @@ struct AnnotationEditorPage: View {
 
     private var canvas: some View {
         ZStack {
-            Image(nsImage: image).resizable()
+            Image(nsImage: picture).resizable()
             Canvas { context, size in
                 for mark in marks + [current].compactMap({ $0 }) { mark.draw(in: context, size: size) }
                 if let mark = marks.first(where: { $0.id == selection }) { drawSelection(around: mark.bounds(in: size), in: context) }
+                if let cropArea { drawCrop(cropArea, in: context, size: size) }
             }
         }
         .accessibilityIdentifier("annotate.canvas")
         .overlay(alignment: .topLeading) { textField }
-        .aspectRatio(image.size, contentMode: .fit)
+        .aspectRatio(picture.size, contentMode: .fit)
         .onGeometryChange(for: CGSize.self) { $0.size } action: { canvasSize = $0 }
         .gesture(drawing)
     }
@@ -168,9 +186,16 @@ struct AnnotationEditorPage: View {
                 guard canvasSize.width > 0, canvasSize.height > 0, tool != .text else { return }
                 if tool == .select { return dragSelection(value) }
                 let point = normalized(value.location)
+                if tool == .crop {
+                    let start = normalized(value.startLocation)
+                    cropArea = CGRect(x: min(start.x, point.x), y: min(start.y, point.y),
+                                      width: abs(point.x - start.x), height: abs(point.y - start.y))
+                        .intersection(CGRect(x: 0, y: 0, width: 1, height: 1))
+                    return
+                }
                 if current == nil {
                     current = AnnotationMark(tool: tool, color: color, width: width, points: [point], filled: filled,
-                                             mosaic: tool == .blur ? AnnotationMark.mosaic(of: image, width: width) : nil)
+                                             mosaic: tool == .blur ? AnnotationMark.mosaic(of: picture, width: width) : nil)
                 } else if tool == .pen || tool == .highlighter {
                     current?.points.append(point)
                 } else {
@@ -179,6 +204,11 @@ struct AnnotationEditorPage: View {
             }
             .onEnded { value in
                 edit = nil
+                if let area = cropArea {
+                    cropArea = nil
+                    let size = CGSize(width: area.width * canvasSize.width, height: area.height * canvasSize.height)
+                    if min(size.width, size.height) >= Metrics.Annotate.minCropSize { transform { $0.cropped(toShare: area) } }
+                }
                 if tool == .text, canvasSize.width > 0, canvasSize.height > 0 {
                     // A click places a text field there; clicking elsewhere keeps the previous text.
                     commitText()
@@ -192,7 +222,25 @@ struct AnnotationEditorPage: View {
             }
     }
 
-    private func record() { history.append(marks) }
+    private func record() { history.append(Snapshot(marks: marks, image: edited)) }
+
+    private func undo() {
+        guard let last = history.popLast() else { return }
+        marks = last.marks
+        edited = last.image
+        selection = nil
+    }
+
+    /// Flattens the marks into the image, then crops or rotates it. Undo brings both back.
+    private func transform(_ change: (CGImage) -> CGImage?) {
+        commitText()
+        guard let flat = flattened()?.cgImage(forProposedRect: nil, context: nil, hints: nil),
+              let result = change(flat) else { return }
+        record()
+        edited = NSImage(cgImage: result, size: CGSize(width: result.width, height: result.height))
+        marks.removeAll()
+        selection = nil
+    }
 
     /// A canvas location as a share of the image's size.
     private func normalized(_ location: CGPoint) -> CGPoint {
@@ -250,6 +298,16 @@ struct AnnotationEditorPage: View {
         }
     }
 
+    /// Dims the image outside the crop area and outlines it.
+    private func drawCrop(_ area: CGRect, in context: GraphicsContext, size: CGSize) {
+        let rect = CGRect(x: area.minX * size.width, y: area.minY * size.height,
+                          width: area.width * size.width, height: area.height * size.height)
+        var outside = Path(CGRect(origin: .zero, size: size))
+        outside.addRect(rect)
+        context.fill(outside, with: .color(.black.opacity(Opacity.muted)), style: FillStyle(eoFill: true))
+        context.stroke(Path(rect), with: .color(.white), style: StrokeStyle(lineWidth: Metrics.hairline, dash: [Spacing.xs]))
+    }
+
     private var footer: some View {
         HStack {
             Button(L(.actionCancel), action: onCancel).keyboardShortcut(typing == nil ? .cancelAction : nil)
@@ -274,17 +332,22 @@ struct AnnotationEditorPage: View {
     }
 
     /// The image at full size with the marks drawn on it.
-    private func render() -> (Data, Int, Int)? {
-        let pixels = image.pixelSize
+    private func flattened() -> NSImage? {
+        let pixels = picture.pixelSize
         let content = ZStack {
-            Image(nsImage: image).resizable()
+            Image(nsImage: picture).resizable()
             Canvas { context, size in for mark in marks { mark.draw(in: context, size: size) } }
         }
         .frame(width: pixels.width, height: pixels.height)
         let renderer = ImageRenderer(content: content)
         renderer.scale = 1
-        let output = renderer.nsImage
-        guard let png = output?.pngRepresentation else { return nil }
+        return renderer.nsImage
+    }
+
+    /// The annotated image as PNG, and its size in pixels.
+    private func render() -> (Data, Int, Int)? {
+        guard let png = flattened()?.pngRepresentation else { return nil }
+        let pixels = picture.pixelSize
         return (png, Int(pixels.width), Int(pixels.height))
     }
 }

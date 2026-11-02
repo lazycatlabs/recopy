@@ -144,6 +144,8 @@ enum Metrics {
         /// Select tool: how far outside a mark, in points, a click still picks it, and the corner handles' size.
         static let hitSlop: CGFloat = 6
         static let handleSize: CGFloat = 8
+        /// Crop tool: the smallest area, in points, that crops; a smaller drag is taken as a slip.
+        static let minCropSize: CGFloat = 10
     }
 
     enum Clipboard {

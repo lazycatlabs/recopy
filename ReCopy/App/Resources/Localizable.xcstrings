@@ -586,6 +586,23 @@
         }
       }
     },
+    "annotateRotate": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rotate Right"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Putar ke Kanan"
+          }
+        }
+      }
+    },
     "annotateShapeStyle": {
       "extractionState": "manual",
       "localizations": {
@@ -4916,6 +4933,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Buramkan"
+          }
+        }
+      }
+    },
+    "toolCrop": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crop"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Potong"
           }
         }
       }
