@@ -377,6 +377,7 @@ S = {
         "tetap gratis untuk semua. Terima kasih!",
     ),
     "sponsorSupport": ("Support", "Dukung"),
+    "sponsorSupportOn": ("Support on %@", "Dukung lewat %@"),
     "sponsorGitHub": ("GitHub Sponsors", "GitHub Sponsors"),
     "sponsorGitHubSubtitle": ("Monthly or one-time", "Bulanan atau sekali"),
     "sponsorBuyMeACoffee": ("Buy Me a Coffee", "Buy Me a Coffee"),

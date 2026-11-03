@@ -4357,6 +4357,23 @@
         }
       }
     },
+    "sponsorSupportOn": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Support on %@"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dukung lewat %@"
+          }
+        }
+      }
+    },
     "sponsorTitle": {
       "extractionState": "manual",
       "localizations": {

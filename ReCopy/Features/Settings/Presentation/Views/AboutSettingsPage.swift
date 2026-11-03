@@ -24,6 +24,7 @@ struct AboutSettingsPage: View {
             ForEach(Sponsor.allCases) { sponsor in
                 SettingsRow(sponsor.title, symbol: sponsor.symbol, subtitle: sponsor.subtitle) {
                     Link(L(.sponsorSupport), destination: sponsor.url)
+                        .accessibilityLabel(L(.sponsorSupportOn(sponsor.title)))
                         .accessibilityIdentifier(sponsor == .github ? "settings.sponsor" : "settings.sponsor.\(sponsor.rawValue)")
                 }
             }

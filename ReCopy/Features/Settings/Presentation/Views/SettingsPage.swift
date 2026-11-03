@@ -67,7 +67,8 @@ enum SettingsPane: String, CaseIterable, Identifiable {
         case .updates: [.updateCheck, .changelogTitle, .updateDownload]
         case .about: [.aboutVersion, .aboutLicense, .aboutSourceCode, .sponsorTitle, .supportFeedback, .supportBugReport, .supportWebsite]
         }
-        return ([title, subtitle] + settings.map(L)).joined(separator: " ")
+        let sponsors = self == .about ? Sponsor.allCases.map(\.title) : []
+        return ([title, subtitle] + settings.map(L) + sponsors).joined(separator: " ")
     }
 
     /// Panes about the open vault's history; without a vault only General and About apply.
