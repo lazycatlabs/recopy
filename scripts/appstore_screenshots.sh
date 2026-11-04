@@ -1,0 +1,18 @@
+#!/bin/zsh
+# Makes the App Store screenshots in fastlane/screenshots/ (English and Indonesian) from the E2E tests' sample vault.
+# Runs only the E2E tests that take them (about 1 minute; leave the Mac alone), then frames each window.
+#
+#   scripts/appstore_screenshots.sh
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+T=ReCopyUITests/ReCopyE2ETests
+scripts/e2e.sh \
+  -only-testing:$T/test01PanelHasNewLookAndAnyDayFilter \
+  -only-testing:$T/test11GroupsFilterAndAssign \
+  -only-testing:$T/test16NotesAreSavedAndSearchable \
+  -only-testing:$T/test19AnnotateShapesSizeAndBlur \
+  -only-testing:$T/test20hPasteSpecialFormatsCopiedJSON
+
+rm -rf fastlane/screenshots/en-US fastlane/screenshots/id
+swift scripts/appstore_screenshots.swift e2e-output/screenshots fastlane/screenshots
