@@ -30,7 +30,8 @@ final class UserDefaultsVaultRepository: VaultRepository {
     func prepare(_ url: URL) throws {
         let store = JSONFileStore(root: url)
         store.adoptLegacyConfig()
-        if !store.exists(VaultLayout.config) {
+        // If copying the Copaste settings failed, they are read in place: don't hide them behind default settings.
+        if !store.exists(VaultLayout.config), !store.exists(VaultLayout.legacyConfig) {
             try store.write(AppSettings(), to: VaultLayout.config)
         }
         defaults.set(try url.bookmarkData(options: .withSecurityScope), forKey: Self.bookmarkKey)
