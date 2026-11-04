@@ -1,1 +1,1 @@
-clipboard,riwayat,tempel,salin,paste,copy,manager,screenshot,ocr,sinkron,icloud
+riwayat,history,paste,copy,snippet,screenshot,ocr,sinkron,icloud,anotasi,catatan,menu bar,raycast

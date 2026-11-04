@@ -3,6 +3,22 @@
 What changed in each version of ReCopy (called Copaste before). The newest version is first. Each version's section is also the text for
 its GitHub release (tag `vX.Y.Z`).
 
+## 0.11.0 — 2026-11-04
+
+### New
+
+- **ReCopy is coming to the Mac App Store.** The download from GitHub and Homebrew stays the same, with the same
+  features. <!-- github-only -->
+
+### Changed
+
+- Feedback and bug reports now go to help.me@lazycatlabs.com.
+
+### Fixed
+
+- If ReCopy can't open your history folder, for example on a drive that isn't connected, it asks for the folder
+  again instead of showing an empty history.
+
 ## 0.10.0 — 2026-11-04
 
 ### New

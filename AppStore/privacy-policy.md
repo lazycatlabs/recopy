@@ -33,7 +33,7 @@ ReCopy is not directed at children and collects no personal information from any
 ## Changes and contact
 
 If this policy changes, the new version will be posted on this page with a new date. Questions:
-[admin@lazycatlabs.com](mailto:admin@lazycatlabs.com).
+[help.me@lazycatlabs.com](mailto:help.me@lazycatlabs.com).
 
 ---
 
@@ -73,4 +73,4 @@ ReCopy tidak ditujukan untuk anak-anak dan tidak mengumpulkan informasi pribadi 
 ## Perubahan dan kontak
 
 Jika kebijakan ini berubah, versi barunya akan dipasang di halaman ini dengan tanggal baru. Pertanyaan:
-[admin@lazycatlabs.com](mailto:admin@lazycatlabs.com).
+[help.me@lazycatlabs.com](mailto:help.me@lazycatlabs.com).

@@ -1,1 +1,1 @@
-clipboard,history,paste,copy,manager,snippets,pasteboard,screenshot,ocr,sync,icloud
+history,snippets,pasteboard,screenshot,ocr,sync,icloud,annotate,notes,menu bar,raycast,search,text

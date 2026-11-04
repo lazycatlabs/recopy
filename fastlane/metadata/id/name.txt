@@ -1,1 +1,1 @@
-ReCopy
+ReCopy — Clipboard Manager
