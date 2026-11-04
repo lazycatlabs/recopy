@@ -18,6 +18,9 @@ final class UserDefaultsVaultRepository: VaultRepository {
         let scoped = try? URL(resolvingBookmarkData: data, options: .withSecurityScope, bookmarkDataIsStale: &isStale)
         guard let url = scoped ?? (try? URL(resolvingBookmarkData: data, bookmarkDataIsStale: &isStale)) else { return nil }
         _ = url.startAccessingSecurityScopedResource()
+        // Without access (an old bookmark in the sandbox) the history would look empty and saving would fail:
+        // ask for the folder again instead.
+        guard (try? FileManager.default.contentsOfDirectory(atPath: url.path)) != nil else { return nil }
         if isStale || scoped == nil, let fresh = try? url.bookmarkData(options: .withSecurityScope) {
             defaults.set(fresh, forKey: Self.bookmarkKey)
         }
