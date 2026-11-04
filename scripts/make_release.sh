@@ -25,11 +25,12 @@ xcodebuild -project ReCopy.xcodeproj -scheme ReCopy -configuration Release \
   -destination 'generic/platform=macOS' -derivedDataPath "$DERIVED" "${SIGNING[@]}" -quiet build
 [[ -d "$APP" ]] || { echo "✗ Build finished but $APP is missing" >&2; exit 1; }
 
-# The keychain's Apple Development identity whose certificate belongs to team $1.
+# The SHA-1 hash of the keychain's Apple Development identity whose certificate belongs to team $1.
 team_identity() {
-  security find-identity -v -p codesigning | awk -F'"' '/"Apple Development/ {print $2}' | while read -r name; do
-    if security find-certificate -c "$name" -p | openssl x509 -noout -subject | grep -q "OU *= *$1"; then
-      print -r -- "$name"
+  security find-identity -v -p codesigning | awk '/"Apple Development/ {print $2}' | while read -r hash; do
+    if security find-certificate -a -Z -p | awk -v h="$hash" '$0 == "SHA-1 hash: " h {f = 1; next} f {print} f && /END CERTIFICATE/ {exit}' |
+      openssl x509 -noout -subject | grep -q "OU *= *$1"; then
+      print -r -- "$hash"
       return
     fi
   done
