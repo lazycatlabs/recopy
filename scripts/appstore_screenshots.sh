@@ -14,5 +14,9 @@ scripts/e2e.sh \
   -only-testing:$T/test19AnnotateShapesSizeAndBlur \
   -only-testing:$T/test20hPasteSpecialFormatsCopiedJSON
 
+# Render into a staging folder, so a failed run leaves the current screenshots alone.
+STAGING=$(mktemp -d)
+trap 'rm -rf "$STAGING"' EXIT
+swift scripts/appstore_screenshots.swift e2e-output/screenshots "$STAGING"
 rm -rf fastlane/screenshots/en-US
-swift scripts/appstore_screenshots.swift e2e-output/screenshots fastlane/screenshots
+mv "$STAGING/en-US" fastlane/screenshots/en-US
