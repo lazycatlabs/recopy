@@ -38,7 +38,10 @@ nonisolated final class FileClipRepository: ClipRepository {
     }
 
     func loadSettings() -> AppSettings {
-        store.read(VaultLayout.config, default: AppSettings())
+        store.adoptLegacyConfig()
+        // If the copy failed, read Copaste's settings in place rather than losing them.
+        let path = store.exists(VaultLayout.config) ? VaultLayout.config : VaultLayout.legacyConfig
+        return store.read(path, default: AppSettings())
     }
 
     func saveSettings(_ settings: AppSettings) throws {

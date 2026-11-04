@@ -44,4 +44,22 @@ struct FileClipRepositoryTests {
         #expect(settings.retention == .week)
         #expect(settings.textRecognition)
     }
+
+    /// A vault from before the rename keeps its settings, and the old file stays for Macs still on Copaste.
+    @Test func adoptsCopasteSettings() throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let store = JSONFileStore(root: root)
+        try store.writeData(Data(#"{"retention":"week"}"#.utf8), to: VaultLayout.legacyConfig)
+
+        let repository = FileClipRepository(root: root)
+        #expect(repository.loadSettings().retention == .week)
+        #expect(store.exists(VaultLayout.config))
+
+        var settings = repository.loadSettings()
+        settings.retention = .month
+        try repository.saveSettings(settings)
+        #expect(repository.loadSettings().retention == .month)
+        #expect(store.read(VaultLayout.legacyConfig, default: AppSettings()).retention == .week)
+    }
 }

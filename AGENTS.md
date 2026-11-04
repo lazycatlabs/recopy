@@ -108,7 +108,7 @@ keep their own names. AppKit controllers that host a page (`ClipboardPanelContro
 
 ```text
 <vault>/
-├── .copaste/config.json   # AppSettings
+├── .recopy/config.json    # AppSettings
 ├── items/<uuid>.json      # ClipItem
 └── blobs/                 # <uuid>.png images, <uuid>-icon favicons, <uuid>-preview link images
 ```

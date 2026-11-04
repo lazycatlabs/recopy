@@ -49,7 +49,7 @@ nonisolated struct ClipGroup: Codable, Hashable, Identifiable, Sendable {
     var name: String
 }
 
-/// Vault-wide settings, stored in `.copaste/config.json`. New fields need defaults: old files are merged with these.
+/// Vault-wide settings, stored in `.recopy/config.json` (`.copaste/` before the rename). New fields need defaults: old files are merged with these.
 nonisolated struct AppSettings: Codable, Equatable, Sendable {
     var retention: Retention = .threeMonths
     var textRecognition = true
