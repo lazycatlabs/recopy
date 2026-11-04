@@ -1,1 +1,1 @@
-Riwayat clipboard tersinkron
+Riwayat clipboard bisa sinkron
