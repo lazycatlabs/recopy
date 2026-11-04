@@ -5,7 +5,8 @@ import Foundation
 /// Raycast's history database is encrypted, so copy counts, source apps and plain-text copies can't be read.
 nonisolated enum RaycastClipboardDataSource {
     /// Built from the real home folder: in the sandboxed App Store build `homeDirectoryForCurrentUser` is the container.
-    static let folder = URL(filePath: String(cString: getpwuid(getuid())!.pointee.pw_dir), directoryHint: .isDirectory)
+    static let folder = (getpwuid(getuid()).map { URL(filePath: String(cString: $0.pointee.pw_dir), directoryHint: .isDirectory) }
+        ?? FileManager.default.homeDirectoryForCurrentUser)
         .appending(path: "Library/Application Support/com.raycast.macos/clipboard", directoryHint: .isDirectory)
 
     static let imageExtensions: Set<String> = ["png", "tiff", "tif", "jpg", "jpeg", "heic", "gif", "icns"]
