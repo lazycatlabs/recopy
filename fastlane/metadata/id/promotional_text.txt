@@ -1,1 +1,1 @@
-Tekan ⇧⌘V di mana saja, temukan yang pernah Anda salin, lalu tempel lagi. Riwayatnya tersimpan di folder pilihan Anda.
+Tekan Shift-Command-V di mana saja, temukan yang pernah Anda salin, lalu tempel lagi. Riwayatnya tersimpan di folder pilihan Anda.

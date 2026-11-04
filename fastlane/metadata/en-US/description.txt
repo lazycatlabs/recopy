@@ -1,6 +1,6 @@
 Copy once, paste anytime.
 
-ReCopy is a clipboard history that lives in your menu bar. Press ⇧⌘V anywhere, find what you copied, and paste it straight back into the app you were in.
+ReCopy is a clipboard history that lives in your menu bar. Press Shift-Command-V anywhere, find what you copied, and paste it straight back into the app you were in.
 
 KNOWS WHAT YOU COPIED
 Text, links, e-mail addresses, colours (HEX, RGB, HSL), images and files, each with its own icon. Filter by type or by the day it was copied.
@@ -24,4 +24,4 @@ Passwords that apps mark as secret are never recorded, and you can ignore whole 
 YOURS TO TUNE
 Change the shortcut, keep history from a day to forever, text size, copy and paste sounds, and open at login.
 
-Pasting straight into other apps needs the Accessibility permission. Without it, ReCopy copies the entry and you press ⌘V yourself.
+Pasting straight into other apps needs the Accessibility permission. Without it, ReCopy copies the entry and you press Command-V yourself.

@@ -1,5 +1,5 @@
-ReCopy is a menu bar clipboard history. Open it with ⇧⌘V or from the menu bar icon. On first launch it asks for a folder to store the history in; any folder works.
+ReCopy is a menu bar clipboard history. Open it with Shift-Command-V or from the menu bar icon. On first launch it asks for a folder to store the history in; any folder works.
 
-The Accessibility permission is optional. It is only used to send ⌘V to the frontmost app after the user picks an entry and presses Return. Without it, ReCopy only puts the entry on the clipboard.
+The Accessibility permission is optional. It is only used to send Command-V to the frontmost app after the user picks an entry and presses Return. Without it, ReCopy only puts the entry on the clipboard.
 
 No account or sign-in is needed. The only network use is fetching the title, icon and preview image of links the user copied.

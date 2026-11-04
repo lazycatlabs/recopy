@@ -1,6 +1,6 @@
 Salin sekali, tempel kapan saja.
 
-ReCopy adalah riwayat clipboard di menu bar. Tekan ⇧⌘V di mana saja, temukan yang pernah Anda salin, lalu tempel langsung ke app yang sedang Anda pakai.
+ReCopy adalah riwayat clipboard di menu bar. Tekan Shift-Command-V di mana saja, temukan yang pernah Anda salin, lalu tempel langsung ke app yang sedang Anda pakai.
 
 MENGENALI YANG ANDA SALIN
 Teks, tautan, alamat e-mail, warna (HEX, RGB, HSL), gambar dan file, masing-masing dengan ikonnya sendiri. Saring menurut jenis atau hari disalin.
@@ -24,4 +24,4 @@ Kata sandi yang ditandai rahasia oleh app tidak pernah dicatat, dan Anda bisa me
 ATUR SESUKA ANDA
 Ganti pintasan, simpan riwayat dari sehari sampai selamanya, ukuran teks, suara salin dan tempel, serta buka saat login.
 
-Menempel langsung ke app lain memerlukan izin Aksesibilitas. Tanpa izin itu, ReCopy menyalin entri dan Anda menekan ⌘V sendiri.
+Menempel langsung ke app lain memerlukan izin Aksesibilitas. Tanpa izin itu, ReCopy menyalin entri dan Anda menekan Command-V sendiri.

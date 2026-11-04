@@ -7,7 +7,9 @@
 # The App Store Connect API key comes from fastlane/.env (see .env.example).
 default_platform(:mac)
 
-ROOT = File.expand_path("..", __dir__)
+# Absolute paths, taken while the Fastfile loads: lanes run from the repository root, where __dir__ is just ".".
+FASTLANE_DIR = File.expand_path(__dir__)
+ROOT = File.dirname(FASTLANE_DIR)
 PKG = File.join(ROOT, "build/AppStore/ReCopy.pkg")
 LOCALES = %w[en-US id].freeze
 
@@ -64,10 +66,10 @@ platform :mac do
     upload_to_app_store(
       platform: "osx",
       app_version: version,
-      metadata_path: File.join(__dir__, "metadata"),
-      screenshots_path: File.join(__dir__, "screenshots"),
-      skip_screenshots: Dir.glob(File.join(__dir__, "screenshots/*/*.png")).empty?,
-      app_rating_config_path: File.join(__dir__, "age_rating.json"),
+      metadata_path: File.join(FASTLANE_DIR, "metadata"),
+      screenshots_path: File.join(FASTLANE_DIR, "screenshots"),
+      skip_screenshots: Dir.glob(File.join(FASTLANE_DIR, "screenshots/*/*.png")).empty?,
+      app_rating_config_path: File.join(FASTLANE_DIR, "age_rating.json"),
       release_notes: notes,
       force: true, # no HTML preview to confirm
       run_precheck_before_submit: false, # precheck needs an Apple ID login, the API key isn't enough
