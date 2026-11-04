@@ -1,14 +1,15 @@
 // Turns E2E window screenshots into App Store screenshots: the window on ReCopy's orange, with a caption above.
 //   swift scripts/appstore_screenshots.swift <e2e screenshots folder> <fastlane/screenshots>
-// Writes <locale>/NN-name.png at 1440×900, one of the Mac App Store's sizes. Run by scripts/appstore_screenshots.sh.
+// Writes en-US/NN-name.png at 1440×900, one of the Mac App Store's sizes. Run by scripts/appstore_screenshots.sh.
+// The App Store shows these for every language, the Indonesian listing too.
 import AppKit
 
-let shots: [(file: String, en: String, id: String)] = [
-    ("01-panel-new-look", "Everything you copied, one shortcut away", "Semua yang Anda salin, satu pintasan saja"),
-    ("28-note-found-by-search", "Find anything, even by your own notes", "Temukan apa saja, bahkan lewat catatan Anda"),
-    ("35-annotate-shapes-size-blur", "Mark up and blur screenshots", "Tandai dan samarkan screenshot"),
-    ("45-paste-special-json-code-block", "Paste JSON and code just right", "Tempel JSON dan kode dengan rapi"),
-    ("16-groups-filtered-by-work", "Keep work and life in groups", "Pisahkan kerja dan pribadi dengan grup"),
+let shots: [(file: String, caption: String)] = [
+    ("01-panel-new-look", "Everything you copied, one shortcut away"),
+    ("28-note-found-by-search", "Find anything, even by your own notes"),
+    ("35-annotate-shapes-size-blur", "Mark up and blur screenshots"),
+    ("45-paste-special-json-code-block", "Paste JSON and code just right"),
+    ("16-groups-filtered-by-work", "Keep work and life in groups"),
 ]
 
 let size = NSSize(width: 1440, height: 900)
@@ -55,15 +56,15 @@ func render(_ window: NSImage, caption: String) -> Data {
     return rep.representation(using: .png, properties: [:])!
 }
 
-for locale in ["en-US", "id"] {
-    let folder = output.appending(path: locale)
+do {
+    let folder = output.appending(path: "en-US")
     try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
     for (index, shot) in shots.enumerated() {
         guard let window = NSImage(contentsOf: input.appending(path: "\(shot.file).png")) else {
             fatalError("Missing \(shot.file).png: run the E2E tests first")
         }
         let name = String(format: "%02d-%@.png", index + 1, String(shot.file.drop { $0.isNumber || $0 == "-" }))
-        try render(window, caption: locale == "id" ? shot.id : shot.en).write(to: folder.appending(path: name))
-        print("✓ \(locale)/\(name)")
+        try render(window, caption: shot.caption).write(to: folder.appending(path: name))
+        print("✓ en-US/\(name)")
     }
 }

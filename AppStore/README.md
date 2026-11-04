@@ -4,7 +4,7 @@ Everything the Mac App Store copy of ReCopy needs. Releases are run by Fastlane 
 
 ```bash
 bundle install                        # once
-scripts/appstore_screenshots.sh       # when the UI changes: fastlane/screenshots/{en-US,id}
+scripts/appstore_screenshots.sh       # when the UI changes: fastlane/screenshots/en-US
 bundle exec fastlane mac beta         # TestFlight
 bundle exec fastlane mac release      # build, upload, listing, "What's New" from CHANGELOG.md, submit for review
 bundle exec fastlane mac metadata     # listing only
@@ -17,7 +17,7 @@ bundle exec fastlane mac metadata     # listing only
 | Category, copyright | `fastlane/metadata/*.txt` |
 | Notes and contact for App Review | `fastlane/metadata/review_information/` |
 | Age rating (4+, nothing applies) | `fastlane/age_rating.json` |
-| Screenshots, 1440×900 | `fastlane/screenshots/`, made by `scripts/appstore_screenshots.sh` |
+| Screenshots, 1440×900, English for every language | `fastlane/screenshots/en-US`, made by `scripts/appstore_screenshots.sh` |
 | "What's New" | the version's section of `CHANGELOG.md` |
 | Privacy policy | `AppStore/privacy-policy.md`, to be published at https://recopy.lazycatlabs.com/privacy |
 
