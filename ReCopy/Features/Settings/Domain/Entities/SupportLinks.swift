@@ -2,7 +2,7 @@ import Foundation
 
 /// Where feedback and bug reports go. Bug reports carry the app and macOS versions so they can be reproduced.
 nonisolated enum SupportLinks {
-    static let email = "admin@lazycatlabs.com"
+    static let email = "help.me@lazycatlabs.com"
     static let website = URL(string: "https://recopy.lazycatlabs.com")!
     static let sourceCode = URL(string: "https://github.com/lazycatlabs/recopy")!
     static let license = URL(string: "https://github.com/lazycatlabs/recopy/blob/main/LICENSE")!

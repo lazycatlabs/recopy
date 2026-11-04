@@ -138,7 +138,7 @@ Not now. ReCopy is macOS only.
 <details>
 <summary><b>Something's wrong. Where do I report it?</b></summary>
 
-Use **Report a Bug** in the menu bar or in Settings → About. It opens an e-mail to admin@lazycatlabs.com with your app and macOS versions filled in.
+Use **Report a Bug** in the menu bar or in Settings → About. It opens an e-mail to help.me@lazycatlabs.com with your app and macOS versions filled in.
 
 </details>
 

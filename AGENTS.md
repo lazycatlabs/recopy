@@ -19,7 +19,7 @@ protocol-driven repositories, async/await, Swift Testing.
 | Localization | `ReCopy/App/Resources/Localizable.xcstrings`, **generated** from `scripts/strings.py` (English, Indonesian) |
 | Storage | The user's vault folder (JSON, one file per entry). `UserDefaults` (through `AppDefaults.store`) only for per-Mac preferences: the vault bookmark, shortcuts (`HotKeyStore`), text size and the clipboard window position (`PanelPlacement`). |
 | Network | LinkPresentation, to fetch a copied link's title, favicon and preview image; and GitHub's releases API when Settings › Updates is opened (`GitHubReleasesDataSource`). |
-| Support | Feedback and bug reports go to `admin@lazycatlabs.com` (`SupportLinks`); website `https://recopy.lazycatlabs.com`. |
+| Support | Feedback and bug reports go to `help.me@lazycatlabs.com` (`SupportLinks`); website `https://recopy.lazycatlabs.com`. |
 | Commits | Conventional Commits, one commit per change. No AI co-author lines. |
 | CI | GitHub Actions: `pull_request-ci.yml` (SwiftLint, generated strings, unit tests; E2E by hand via Run workflow) and `merge-ci.yml` (ad-hoc DMG + zip artifact, deletes the merged branch). |
 
