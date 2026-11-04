@@ -6,6 +6,15 @@ enum SettingsPane: String, CaseIterable, Identifiable {
 
     var id: Self { self }
 
+    /// The panes this build shows. App Store copies are updated by the App Store, and may not point elsewhere.
+    static var shown: [SettingsPane] {
+        #if APP_STORE
+        allCases.filter { $0 != .updates }
+        #else
+        allCases
+        #endif
+    }
+
     var title: String {
         switch self {
         case .general: L(.settingsGeneral)
@@ -67,7 +76,11 @@ enum SettingsPane: String, CaseIterable, Identifiable {
         case .updates: [.updateCheck, .changelogTitle, .updateDownload]
         case .about: [.aboutVersion, .aboutLicense, .aboutSourceCode, .sponsorTitle, .supportFeedback, .supportBugReport, .supportWebsite]
         }
+        #if APP_STORE
+        let sponsors: [String] = []
+        #else
         let sponsors = self == .about ? Sponsor.allCases.map(\.title) : []
+        #endif
         return ([title, subtitle] + settings.map(L) + sponsors).joined(separator: " ")
     }
 
@@ -93,7 +106,7 @@ struct SettingsPage: View {
 
     private var panes: [SettingsPane] {
         let query = search.trimmingCharacters(in: .whitespaces)
-        return SettingsPane.allCases.filter { pane in
+        return SettingsPane.shown.filter { pane in
             (container.session != nil || !pane.needsVault) && (query.isEmpty || pane.searchText.localizedStandardContains(query))
         }
     }

@@ -322,6 +322,10 @@ S = {
     "textSizeExtraLarge": ("Extra Large", "Sangat Besar"),
     "importTitle": ("Import", "Impor"),
     "importFromRaycast": ("Import from Raycast…", "Impor dari Raycast…"),
+    "importPickFolder": (
+        "Choose Raycast's clipboard folder so ReCopy can read it.",
+        "Pilih folder clipboard Raycast agar ReCopy bisa membacanya.",
+    ),
     "importFooter": (
         "Brings in the images and rich-text copies Raycast keeps. Raycast encrypts the rest of its history (plain text, copy counts, source apps), so those can't be moved. Entries already here are skipped.",
         "Mengimpor gambar dan salinan teks berformat yang disimpan Raycast. Sisa riwayat Raycast (teks biasa, jumlah salin, aplikasi sumber) dienkripsi sehingga tidak bisa dipindahkan. Entri yang sudah ada dilewati.",

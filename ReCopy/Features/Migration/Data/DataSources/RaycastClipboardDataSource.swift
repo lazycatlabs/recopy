@@ -4,7 +4,8 @@ import Foundation
 /// The clipboard files Raycast keeps unencrypted: images, and the HTML and plain text of rich copies.
 /// Raycast's history database is encrypted, so copy counts, source apps and plain-text copies can't be read.
 nonisolated enum RaycastClipboardDataSource {
-    static let folder = FileManager.default.homeDirectoryForCurrentUser
+    /// Built from the real home folder: in the sandboxed App Store build `homeDirectoryForCurrentUser` is the container.
+    static let folder = URL(filePath: String(cString: getpwuid(getuid())!.pointee.pw_dir), directoryHint: .isDirectory)
         .appending(path: "Library/Application Support/com.raycast.macos/clipboard", directoryHint: .isDirectory)
 
     static let imageExtensions: Set<String> = ["png", "tiff", "tif", "jpg", "jpeg", "heic", "gif", "icns"]
