@@ -18,7 +18,9 @@ struct ImportSettingsPage: View {
                     .frame(width: Metrics.Settings.groupNameWidth)
                 } else {
                     Button(L(.importFromRaycast), action: prepare)
+                    #if !APP_STORE
                         .disabled(!FileManager.default.fileExists(atPath: RaycastClipboardDataSource.folder.path))
+                    #endif
                         .accessibilityIdentifier("settings.importRaycast")
                 }
             }
@@ -33,10 +35,27 @@ struct ImportSettingsPage: View {
     /// Lists the files first, so the confirmation can say how many there are. Files older than the
     /// "Keep history for" setting are left out: they would be deleted again straight away.
     private func prepare() {
+        guard let folder = raycastFolder() else { return }
         let cutoff = session.settings.retention.cutoff(from: .now) ?? .distantPast
-        files = RaycastClipboardDataSource.importableFiles().filter { RaycastClipboardDataSource.copiedAt($0) >= cutoff }
+        files = RaycastClipboardDataSource.importableFiles(in: folder).filter { RaycastClipboardDataSource.copiedAt($0) >= cutoff }
         result = nil
         if files.isEmpty { result = L(.importNothing) } else { confirms = true }
+    }
+
+    /// Raycast's clipboard folder. The sandboxed App Store build can't read it until the user picks it.
+    private func raycastFolder() -> URL? {
+        #if APP_STORE
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.directoryURL = RaycastClipboardDataSource.folder
+        panel.prompt = L(.importAction)
+        panel.message = L(.importPickFolder)
+        NSApp.activate()
+        return panel.runModal() == .OK ? panel.url : nil
+        #else
+        return RaycastClipboardDataSource.folder
+        #endif
     }
 
     private func start() {

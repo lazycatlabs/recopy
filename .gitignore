@@ -16,3 +16,11 @@ build/
 
 # E2E test output (screenshots, result bundles)
 e2e-output/
+
+# Fastlane
+fastlane/.env
+fastlane/report.xml
+fastlane/README.md
+*.p8
+vendor/bundle/
+.bundle/

@@ -1,0 +1,95 @@
+# App Store releases of ReCopy. GitHub and Homebrew releases still use scripts/make_release.sh.
+#
+#   bundle exec fastlane mac beta       build and upload to TestFlight
+#   bundle exec fastlane mac release    build, upload, set the listing and "What's New", submit for review
+#   bundle exec fastlane mac metadata   update the listing only (fastlane/metadata), no build
+#
+# The App Store Connect API key comes from fastlane/.env (see .env.example).
+default_platform(:mac)
+
+ROOT = File.expand_path("..", __dir__)
+PKG = File.join(ROOT, "build/AppStore/ReCopy.pkg")
+LOCALES = %w[en-US id].freeze
+
+platform :mac do
+  before_all do
+    app_store_connect_api_key
+  end
+
+  desc "Sandboxed App Store build: build/AppStore/ReCopy.pkg"
+  lane :build do
+    key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
+    team = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
+    # Lets xcodebuild create the distribution certificates and profiles with the API key, also on CI.
+    auth = "-allowProvisioningUpdates -authenticationKeyPath #{ENV.fetch('APP_STORE_CONNECT_API_KEY_KEY_FILEPATH').shellescape} " \
+           "-authenticationKeyID #{key[:key_id]} -authenticationKeyIssuerID #{key[:issuer_id]}"
+    build_mac_app(
+      project: File.join(ROOT, "ReCopy.xcodeproj"),
+      scheme: "ReCopy",
+      configuration: "Release",
+      export_method: "app-store",
+      output_directory: File.dirname(PKG),
+      output_name: "ReCopy",
+      clean: true,
+      export_team_id: team,
+      xcargs: "#{auth} DEVELOPMENT_TEAM=#{team} ENABLE_APP_SANDBOX=YES CODE_SIGN_ENTITLEMENTS=AppStore/ReCopy.entitlements " \
+              "SWIFT_ACTIVE_COMPILATION_CONDITIONS=APP_STORE INFOPLIST_KEY_ITSAppUsesNonExemptEncryption=NO",
+      export_xcargs: auth
+    )
+  end
+
+  desc "Build and upload to TestFlight"
+  lane :beta do
+    build
+    upload_to_testflight(pkg: PKG, app_platform: "osx", skip_waiting_for_build_processing: true)
+  end
+
+  desc "Build, upload, update the listing with this version's changelog, and submit for review"
+  lane :release do
+    build
+    deliver_listing(pkg: PKG, submit_for_review: true)
+  end
+
+  desc "Update the App Store listing (fastlane/metadata and screenshots) without a build"
+  lane :metadata do
+    deliver_listing(skip_binary_upload: true)
+  end
+
+  private_lane :deliver_listing do |options|
+    notes = release_notes
+    upload_to_app_store(
+      platform: "osx",
+      app_version: version,
+      metadata_path: File.join(__dir__, "metadata"),
+      screenshots_path: File.join(__dir__, "screenshots"),
+      skip_screenshots: Dir.glob(File.join(__dir__, "screenshots/*/*.png")).empty?,
+      app_rating_config_path: File.join(__dir__, "age_rating.json"),
+      release_notes: LOCALES.to_h { |locale| [locale, notes] },
+      force: true, # no HTML preview to confirm
+      run_precheck_before_submit: false, # precheck needs an Apple ID login, the API key isn't enough
+      automatic_release: true,
+      submission_information: { export_compliance_uses_encryption: false, add_id_info_uses_idfa: false },
+      **options
+    )
+  end
+
+  # MARKETING_VERSION of the app target.
+  def version
+    get_version_number(xcodeproj: File.join(ROOT, "ReCopy.xcodeproj"), target: "ReCopy")
+  end
+
+  # "What's New": this version's CHANGELOG.md section as plain text (App Store Connect shows no Markdown).
+  def release_notes
+    changelog = File.read(File.join(ROOT, "CHANGELOG.md"), encoding: "UTF-8")
+    section = changelog[/^## #{Regexp.escape(version)} .*?\n(.*?)(?=^## |\z)/m, 1]
+    UI.user_error!("CHANGELOG.md has no \"## #{version} — <date>\" section") if section.nil? || section.strip.empty?
+    section
+      .gsub(/\n {2,}/, " ")         # join wrapped bullet lines
+      .gsub(/^### (.+)$/, '\1:')    # "### New" -> "New:"
+      .gsub(/^- /, "• ")
+      .gsub(/\*\*|`/, "")
+      .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
+      .gsub(/\n{3,}/, "\n\n")
+      .strip
+  end
+end

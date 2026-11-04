@@ -20,6 +20,8 @@ struct AboutSettingsPage: View {
             }
             SettingsRow(L(.supportWebsite), symbol: "safari") { Link(L(.supportWebsite), destination: SupportLinks.website) }
         }
+        // App Review only allows tips through In-App Purchase.
+        #if !APP_STORE
         SettingsGroup(L(.sponsorTitle), footer: L(.sponsorFooter)) {
             ForEach(Sponsor.allCases) { sponsor in
                 SettingsRow(sponsor.title, symbol: sponsor.symbol, subtitle: sponsor.subtitle) {
@@ -29,5 +31,6 @@ struct AboutSettingsPage: View {
                 }
             }
         }
+        #endif
     }
 }

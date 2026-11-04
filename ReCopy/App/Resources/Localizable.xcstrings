@@ -1654,6 +1654,23 @@
         }
       }
     },
+    "importPickFolder": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose Raycast's clipboard folder so ReCopy can read it."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pilih folder clipboard Raycast agar ReCopy bisa membacanya."
+          }
+        }
+      }
+    },
     "importProgress": {
       "extractionState": "manual",
       "localizations": {

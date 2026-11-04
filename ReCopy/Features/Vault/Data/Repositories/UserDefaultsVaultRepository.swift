@@ -13,8 +13,17 @@ final class UserDefaultsVaultRepository: VaultRepository {
     func resolveVault() -> URL? {
         guard let data = defaults.data(forKey: Self.bookmarkKey) else { return nil }
         var isStale = false
-        guard let url = try? URL(resolvingBookmarkData: data, bookmarkDataIsStale: &isStale) else { return nil }
-        if isStale, let fresh = try? url.bookmarkData() { defaults.set(fresh, forKey: Self.bookmarkKey) }
+        // The App Store build is sandboxed and can only reopen the folder through a security-scoped bookmark.
+        // Bookmarks saved before 0.11 have no scope: they still resolve, and are saved again with one.
+        let scoped = try? URL(resolvingBookmarkData: data, options: .withSecurityScope, bookmarkDataIsStale: &isStale)
+        guard let url = scoped ?? (try? URL(resolvingBookmarkData: data, bookmarkDataIsStale: &isStale)) else { return nil }
+        _ = url.startAccessingSecurityScopedResource()
+        // Without access (an old bookmark in the sandbox) the history would look empty and saving would fail:
+        // ask for the folder again instead.
+        guard (try? FileManager.default.contentsOfDirectory(atPath: url.path)) != nil else { return nil }
+        if isStale || scoped == nil, let fresh = try? url.bookmarkData(options: .withSecurityScope) {
+            defaults.set(fresh, forKey: Self.bookmarkKey)
+        }
         return url
     }
 
@@ -23,7 +32,7 @@ final class UserDefaultsVaultRepository: VaultRepository {
         if !FileManager.default.fileExists(atPath: url.appending(path: VaultLayout.config).path) {
             try store.write(AppSettings(), to: VaultLayout.config)
         }
-        defaults.set(try url.bookmarkData(), forKey: Self.bookmarkKey)
+        defaults.set(try url.bookmarkData(options: .withSecurityScope), forKey: Self.bookmarkKey)
     }
 
     func forget() {

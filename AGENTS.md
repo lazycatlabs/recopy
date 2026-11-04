@@ -30,6 +30,8 @@ python3 scripts/strings.py
 swiftlint
 xcodebuild -project ReCopy.xcodeproj -scheme ReCopy -destination 'platform=macOS' build
 xcodebuild -project ReCopy.xcodeproj -scheme ReCopy -destination 'platform=macOS' test
+bundle exec fastlane mac release   # App Store: build, upload, listing, submit (see Releases)
+scripts/appstore_screenshots.sh    # App Store screenshots from the E2E sample vault, into fastlane/screenshots/
 scripts/e2e.sh   # E2E UI tests; screenshots in e2e-output/ (git-ignored). Drives the real mouse; quits a running ReCopy.
 ```
 
@@ -127,3 +129,10 @@ keep their own names. AppKit controllers that host a page (`ClipboardPanelContro
   `CHANGELOG.md`, run `scripts/make_release.sh` (DMG + zip, prints the zip's sha256), tag `vX.Y.Z`, publish with
   `gh release create` (notes: that changelog section plus the install block), then update `Casks/recopy.rb` in
   `lazycatlabs/homebrew-tap`.
+- **App Store:** after the steps above, `bundle exec fastlane mac release` (`fastlane/Fastfile`) archives the same
+  Release build with the `APP_STORE` flag and the sandbox entitlements in `AppStore/`, uploads it, sends the listing in
+  `fastlane/metadata` with that version's `CHANGELOG.md` section as "What's New", and submits it for review.
+  `mac beta` goes to TestFlight only, `mac metadata` updates the listing without a build. The App Store Connect API key
+  is read from `fastlane/.env` (see `.env.example`). `#if APP_STORE` hides the Updates pane and sponsor links (App
+  Review rules) and makes the Raycast import ask for its folder. The vault bookmark is security-scoped in every build.
+  `AppStore/README.md` lists what lives where and the one-time setup in App Store Connect.
