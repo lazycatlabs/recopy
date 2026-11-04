@@ -3,6 +3,20 @@
 What changed in each version of ReCopy (called Copaste before). The newest version is first. Each version's section is also the text for
 its GitHub release (tag `vX.Y.Z`).
 
+## 0.10.0 — 2026-11-04
+
+### New
+
+- **Crop and rotate images** in the annotation editor. Pick **Crop** and drag over the part to keep, or click
+  **Rotate Right** to turn the image a quarter. Your marks so far are kept in the image, and Undo brings back the
+  earlier version.
+- **Sponsor ReCopy** from Settings › About: GitHub Sponsors, Buy Me a Coffee, Ko-fi, PayPal and Saweria (for
+  supporters in Indonesia). Settings search finds them by name.
+
+### Changed
+
+- Under the hood: the project is updated for Xcode 27.2. Nothing looks or works differently.
+
 ## 0.9.2 — 2026-11-02
 
 ### Changed
