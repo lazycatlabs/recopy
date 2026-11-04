@@ -74,12 +74,12 @@ enum SettingsPane: String, CaseIterable, Identifiable {
         case .privacy: [.settingsIgnoredApps, .settingsAddApp]
         case .importing: [.importFromRaycast]
         case .updates: [.updateCheck, .changelogTitle, .updateDownload]
-        case .about: [.aboutVersion, .aboutLicense, .aboutSourceCode, .sponsorTitle, .supportFeedback, .supportBugReport, .supportWebsite]
+        case .about: [.aboutVersion, .aboutLicense, .aboutSourceCode, .supportFeedback, .supportBugReport, .supportWebsite]
         }
         #if APP_STORE
         let sponsors: [String] = []
         #else
-        let sponsors = self == .about ? Sponsor.allCases.map(\.title) : []
+        let sponsors = self == .about ? [L(.sponsorTitle)] + Sponsor.allCases.map(\.title) : []
         #endif
         return ([title, subtitle] + settings.map(L) + sponsors).joined(separator: " ")
     }
