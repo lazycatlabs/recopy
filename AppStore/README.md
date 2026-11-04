@@ -18,7 +18,7 @@ bundle exec fastlane mac metadata     # listing only
 | Notes and contact for App Review | `fastlane/metadata/review_information/` |
 | Age rating (4+, nothing applies) | `fastlane/age_rating.json` |
 | Screenshots, 1440×900, English for every language | `fastlane/screenshots/en-US`, made by `scripts/appstore_screenshots.sh` |
-| "What's New" | the version's section of `CHANGELOG.md` |
+| "What's New" | the version's section of `CHANGELOG.md`, without bullets ending in `<!-- github-only -->` (GitHub and Homebrew only). Not sent for the first version, which has none. |
 | Privacy policy | `AppStore/privacy-policy.md`, to be published at https://recopy.lazycatlabs.com/privacy |
 
 ## Set up once, by hand

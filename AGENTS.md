@@ -131,7 +131,8 @@ keep their own names. AppKit controllers that host a page (`ClipboardPanelContro
   `lazycatlabs/homebrew-tap`.
 - **App Store:** after the steps above, `bundle exec fastlane mac release` (`fastlane/Fastfile`) archives the same
   Release build with the `APP_STORE` flag and the sandbox entitlements in `AppStore/`, uploads it, sends the listing in
-  `fastlane/metadata` with that version's `CHANGELOG.md` section as "What's New", and submits it for review.
+  `fastlane/metadata` with that version's `CHANGELOG.md` section as "What's New" (bullets ending in `<!-- github-only -->` are left out),
+  and submits it for review.
   `mac beta` goes to TestFlight only, `mac metadata` updates the listing without a build. The App Store Connect API key
   is read from `fastlane/.env` (see `.env.example`). `#if APP_STORE` hides the Updates pane and sponsor links (App
   Review rules) and makes the Raycast import ask for its folder. The vault bookmark is security-scoped in every build.
