@@ -1,0 +1,1 @@
+clipboard,history,paste,copy,manager,snippets,pasteboard,screenshot,ocr,sync,icloud

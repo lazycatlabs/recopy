@@ -1,0 +1,27 @@
+Copy once, paste anytime.
+
+ReCopy is a clipboard history that lives in your menu bar. Press ⇧⌘V anywhere, find what you copied, and paste it straight back into the app you were in.
+
+KNOWS WHAT YOU COPIED
+Text, links, e-mail addresses, colours (HEX, RGB, HSL), images and files, each with its own icon. Filter by type or by the day it was copied.
+
+YOUR HISTORY, YOUR FOLDER
+History is saved in a folder you choose. Put it in iCloud Drive, Google Drive or OneDrive to share it between your Macs. No account, no server.
+
+FEATURES
+• Link previews with the site's icon, title and image
+• Text in copied screenshots is recognised on your Mac, so you can search for it
+• Pin entries to keep them at the top
+• Sections by time: Today, Yesterday, This Week, This Month and by month
+• Details: source app, characters and words, image size, how often it was copied and pasted
+• Annotate, crop and rotate images
+• Actions per type: open a link, write an e-mail, copy a colour as HEX, RGB or HSL, save to a file
+• Import from Raycast
+
+PRIVATE BY DEFAULT
+Passwords that apps mark as secret are never recorded, and you can ignore whole apps. Passwords and Keychain Access are ignored from the start.
+
+YOURS TO TUNE
+Change the shortcut, keep history from a day to forever, text size, copy and paste sounds, and open at login.
+
+Pasting straight into other apps needs the Accessibility permission. Without it, ReCopy copies the entry and you press ⌘V yourself.
