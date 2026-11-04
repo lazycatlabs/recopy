@@ -19,8 +19,9 @@ platform :mac do
   desc "Sandboxed App Store build: build/AppStore/ReCopy.pkg"
   lane :build do
     key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
+    team = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
     # Lets xcodebuild create the distribution certificates and profiles with the API key, also on CI.
-    auth = "-allowProvisioningUpdates -authenticationKeyPath #{ENV.fetch('APP_STORE_CONNECT_API_KEY_KEY_FILEPATH')} " \
+    auth = "-allowProvisioningUpdates -authenticationKeyPath #{ENV.fetch('APP_STORE_CONNECT_API_KEY_KEY_FILEPATH').shellescape} " \
            "-authenticationKeyID #{key[:key_id]} -authenticationKeyIssuerID #{key[:issuer_id]}"
     build_mac_app(
       project: File.join(ROOT, "ReCopy.xcodeproj"),
@@ -30,7 +31,8 @@ platform :mac do
       output_directory: File.dirname(PKG),
       output_name: "ReCopy",
       clean: true,
-      xcargs: "#{auth} ENABLE_APP_SANDBOX=YES CODE_SIGN_ENTITLEMENTS=AppStore/ReCopy.entitlements " \
+      export_team_id: team,
+      xcargs: "#{auth} DEVELOPMENT_TEAM=#{team} ENABLE_APP_SANDBOX=YES CODE_SIGN_ENTITLEMENTS=AppStore/ReCopy.entitlements " \
               "SWIFT_ACTIVE_COMPILATION_CONDITIONS=APP_STORE INFOPLIST_KEY_ITSAppUsesNonExemptEncryption=NO",
       export_xcargs: auth
     )
