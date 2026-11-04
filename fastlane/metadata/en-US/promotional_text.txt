@@ -1,1 +1,1 @@
-Press ⇧⌘V anywhere, find what you copied and paste it back. Your history stays in a folder you choose.
+Press Shift-Command-V anywhere, find what you copied and paste it back. Your history stays in a folder you choose.
