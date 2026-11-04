@@ -88,7 +88,7 @@ platform :mac do
     changelog = File.read(File.join(ROOT, "CHANGELOG.md"), encoding: "UTF-8")
     section = changelog[/^## #{Regexp.escape(version)} .*?\n(.*?)(?=^## |\z)/m, 1]
     UI.user_error!("CHANGELOG.md has no \"## #{version} — <date>\" section") if section.nil? || section.strip.empty?
-    section
+    text = section
       .gsub(/\n {2,}/, " ")         # join wrapped bullet lines
       .gsub(/^- .*<!-- github-only -->\n?/, "")
       .gsub(/^### .+\n+(?=### |\z)/, "") # headings left without bullets
@@ -98,5 +98,7 @@ platform :mac do
       .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
       .gsub(/\n{3,}/, "\n\n")
       .strip
+    UI.user_error!("CHANGELOG.md's \"## #{version}\" has only github-only bullets: add one for the App Store") if text.empty?
+    text
   end
 end
