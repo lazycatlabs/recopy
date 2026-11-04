@@ -112,7 +112,7 @@ Everything stays in the folder you picked. There are no accounts and no analytic
 
 ```
 <your folder>/
-├── .copaste/config.json   settings shared by your Macs
+├── .recopy/config.json    settings shared by your Macs
 ├── items/<id>.json        one small file per entry
 └── blobs/                 images, favicons and link previews
 ```

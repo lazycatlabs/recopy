@@ -29,7 +29,8 @@ final class UserDefaultsVaultRepository: VaultRepository {
 
     func prepare(_ url: URL) throws {
         let store = JSONFileStore(root: url)
-        if !FileManager.default.fileExists(atPath: url.appending(path: VaultLayout.config).path) {
+        store.adoptLegacyConfig()
+        if !store.exists(VaultLayout.config) {
             try store.write(AppSettings(), to: VaultLayout.config)
         }
         defaults.set(try url.bookmarkData(options: .withSecurityScope), forKey: Self.bookmarkKey)

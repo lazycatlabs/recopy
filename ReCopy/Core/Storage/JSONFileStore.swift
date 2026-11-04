@@ -3,8 +3,10 @@ import Foundation
 
 /// Fixed paths inside a vault folder.
 nonisolated enum VaultLayout {
-    static let marker = ".copaste"
-    static let config = ".copaste/config.json"
+    static let marker = ".recopy"
+    static let config = ".recopy/config.json"
+    /// Where Copaste kept the settings. Read, never written: Macs still on Copaste keep using it.
+    static let legacyConfig = ".copaste/config.json"
     /// One JSON file per clipboard entry.
     static let items = "items"
     /// Image data, favicons and link previews, referenced from the entries by relative path.
@@ -94,6 +96,21 @@ nonisolated struct JSONFileStore: Sendable {
         let url = root.appending(path: path)
         try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
         try data.write(to: url, options: .atomic)
+    }
+
+    func exists(_ path: String) -> Bool {
+        FileManager.default.fileExists(atPath: root.appending(path: path).path)
+    }
+
+    /// Copies Copaste's settings into `.recopy/` the first time a vault from before the rename opens.
+    /// The old folder stays, so a Mac still on Copaste that shares the vault keeps working.
+    func adoptLegacyConfig() {
+        guard !exists(VaultLayout.config), exists(VaultLayout.legacyConfig) else { return }
+        do {
+            try writeData(Data(contentsOf: root.appending(path: VaultLayout.legacyConfig)), to: VaultLayout.config)
+        } catch {
+            Log.storage.error("Couldn't copy the Copaste settings: \(String(describing: error), privacy: .public)")
+        }
     }
 
     func remove(_ path: String) throws {
