@@ -33,8 +33,7 @@ platform :mac do
       clean: true,
       export_team_id: team,
       xcargs: "#{auth} DEVELOPMENT_TEAM=#{team} ENABLE_APP_SANDBOX=YES CODE_SIGN_ENTITLEMENTS=AppStore/ReCopy.entitlements " \
-              "SWIFT_ACTIVE_COMPILATION_CONDITIONS=APP_STORE INFOPLIST_KEY_ITSAppUsesNonExemptEncryption=NO",
-      export_xcargs: auth
+              "SWIFT_ACTIVE_COMPILATION_CONDITIONS=APP_STORE INFOPLIST_KEY_ITSAppUsesNonExemptEncryption=NO"
     )
   end
 
