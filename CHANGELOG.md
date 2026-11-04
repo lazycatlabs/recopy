@@ -3,16 +3,20 @@
 What changed in each version of ReCopy (called Copaste before). The newest version is first. Each version's section is also the text for
 its GitHub release (tag `vX.Y.Z`).
 
-## 0.11.0 — 2026-11-04
+## 0.11.1 — 2026-11-04
 
 ### New
 
-- **ReCopy is coming to the Mac App Store.** The download from GitHub and Homebrew stays the same, with the same
-  features. <!-- github-only -->
+- **ReCopy is coming to the Mac App Store** as ReCopy — Clipboard Manager. The download from GitHub and Homebrew
+  stays the same, with the same features. <!-- github-only -->
 
 ### Changed
 
+- Your vault keeps its settings in a `.recopy` folder (it was `.copaste`). An existing vault's settings are copied
+  over the first time it opens, and the old folder stays, so a Mac still on an older version keeps working.
 - Feedback and bug reports now go to help.me@lazycatlabs.com.
+- ReCopy is now signed with the Lazycat Labs team certificate, so macOS sees a new signature: grant Accessibility
+  again after updating (for pasting into other apps). <!-- github-only -->
 
 ### Fixed
 

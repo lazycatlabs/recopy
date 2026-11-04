@@ -6,8 +6,8 @@
 #   scripts/make_release.sh
 #   ADHOC_SIGN=1 scripts/make_release.sh   (CI: no certificate, signed ad hoc)
 #
-# The app is signed with the first "Apple Development" identity (set SIGN_IDENTITY to use another), so macOS keeps
-# the Accessibility permission across updates. Without an identity it falls back to ad-hoc signing.
+# The app is signed with the "Apple Development" identity of the project's DEVELOPMENT_TEAM (set SIGN_IDENTITY to use
+# another), so macOS keeps the Accessibility permission across updates. It stops if the keychain has none.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -25,9 +25,21 @@ xcodebuild -project ReCopy.xcodeproj -scheme ReCopy -configuration Release \
   -destination 'generic/platform=macOS' -derivedDataPath "$DERIVED" "${SIGNING[@]}" -quiet build
 [[ -d "$APP" ]] || { echo "✗ Build finished but $APP is missing" >&2; exit 1; }
 
+# The keychain's Apple Development identity whose certificate belongs to team $1.
+team_identity() {
+  security find-identity -v -p codesigning | awk -F'"' '/"Apple Development/ {print $2}' | while read -r name; do
+    if security find-certificate -c "$name" -p | openssl x509 -noout -subject | grep -q "OU *= *$1"; then
+      print -r -- "$name"
+      return
+    fi
+  done
+}
+
 IDENTITY=""
 if [[ "${ADHOC_SIGN:-}" != 1 ]]; then
-  IDENTITY=${SIGN_IDENTITY:-$(security find-identity -v -p codesigning | grep -m1 "Apple Development" | awk '{print $2}')}
+  TEAM=$(grep -m1 -o 'DEVELOPMENT_TEAM = [A-Z0-9]*' ReCopy.xcodeproj/project.pbxproj | awk '{print $3}')
+  IDENTITY=${SIGN_IDENTITY:-$(team_identity "$TEAM")}
+  [[ -n "$IDENTITY" ]] || { echo "✗ No Apple Development identity for team $TEAM in the keychain (or set SIGN_IDENTITY)" >&2; exit 1; }
 fi
 echo "→ Signing with ${IDENTITY:-ad hoc}…"
 codesign --force --deep --options runtime --timestamp=none --sign "${IDENTITY:--}" "$APP"
