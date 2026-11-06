@@ -29,7 +29,8 @@ SIGNING=()
 
 IDENTITY=""
 if [[ "$ADHOC" != 1 ]]; then
-  TEAM=$(grep -m1 -o 'DEVELOPMENT_TEAM = [A-Z0-9]*' ReCopy.xcodeproj/project.pbxproj | awk '{print $3}')
+  TEAM=$(grep -m1 -o 'DEVELOPMENT_TEAM = [A-Z0-9]*' ReCopy.xcodeproj/project.pbxproj | awk '{print $3}' || true)
+  [[ -n "$TEAM" ]] || { echo "✗ No DEVELOPMENT_TEAM in ReCopy.xcodeproj/project.pbxproj" >&2; exit 1; }
   IDENTITY=${SIGN_IDENTITY:-$(security find-identity -v -p codesigning | grep -m1 "Developer ID Application:.*($TEAM)" | awk '{print $2}' || true)}
   [[ -n "$IDENTITY" ]] || { echo "✗ No Developer ID Application identity for team $TEAM in the keychain (or set SIGN_IDENTITY)" >&2; exit 1; }
   xcrun notarytool history --keychain-profile "$PROFILE" >/dev/null ||
