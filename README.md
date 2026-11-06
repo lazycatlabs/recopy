@@ -191,7 +191,7 @@ scripts/               String catalog generator, release packaging
 <summary><b>Releasing</b></summary>
 
 1. Bump `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in `ReCopy.xcodeproj/project.pbxproj` and add a section to `CHANGELOG.md`.
-2. `scripts/make_release.sh` builds `build/ReCopy-<version>.dmg` and `.zip` and prints the zip's sha256.
+2. `scripts/make_release.sh` builds `build/ReCopy-<version>.dmg` and `.zip`, signed with Developer ID and notarized, and prints the zip's sha256.
 3. Tag and publish: `gh release create v<version> build/ReCopy-<version>.dmg build/ReCopy-<version>.zip --notes-file <notes>`.
 4. Update `version` and `sha256` in `Casks/recopy.rb` in [lazycatlabs/homebrew-tap](https://github.com/lazycatlabs/homebrew-tap).
 
