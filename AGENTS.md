@@ -126,7 +126,8 @@ keep their own names. AppKit controllers that host a page (`ClipboardPanelContro
   `NSPasteboard(name:)`. A running ReCopy would otherwise record test data into the user's vault.
 - The ad-hoc signature changes every build, so Accessibility may need granting again in debug builds.
 - **Releases:** bump `MARKETING_VERSION` / `CURRENT_PROJECT_VERSION`, add a `## X.Y.Z — <date>` section to
-  `CHANGELOG.md`, run `scripts/make_release.sh` (DMG + zip, prints the zip's sha256), tag `vX.Y.Z`, publish with
+  `CHANGELOG.md`, run `scripts/make_release.sh` (Developer ID signed and notarized DMG + zip, prints the zip's sha256;
+  needs the team's Developer ID certificate and the `notary` keychain profile, see the script's header), tag `vX.Y.Z`, publish with
   `gh release create` (notes: that changelog section plus the install block), then update `Casks/recopy.rb` in
   `lazycatlabs/homebrew-tap`.
 - **App Store:** after the steps above, `bundle exec fastlane mac release` (`fastlane/Fastfile`) archives the same

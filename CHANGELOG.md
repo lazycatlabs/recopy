@@ -3,6 +3,14 @@
 What changed in each version of ReCopy (called Copaste before). The newest version is first. Each version's section is also the text for
 its GitHub release (tag `vX.Y.Z`).
 
+## 0.11.2 — 2026-11-06
+
+### Changed
+
+- ReCopy is now signed with a Developer ID and notarized by Apple, so macOS opens it without the "can't be
+  verified" warning. The signature changed again: grant Accessibility once more after updating (for pasting into
+  other apps). <!-- github-only -->
+
 ## 0.11.1 — 2026-11-04
 
 ### New
