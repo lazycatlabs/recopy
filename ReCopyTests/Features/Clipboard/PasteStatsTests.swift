@@ -8,7 +8,9 @@ struct PasteStatsTests {
     }
 
     @Test func countsTodayMonthAndTotal() throws {
-        let defaults = try #require(UserDefaults(suiteName: UUID().uuidString))
+        let suite = UUID().uuidString
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
         let stats = PasteStats(store: defaults)
         stats.record(at: try date(2026, 10, 30))
         stats.record(at: try date(2026, 11, 1))
@@ -26,7 +28,10 @@ struct PasteStatsTests {
     }
 
     @Test func emptyHasNoAverage() throws {
-        let stats = PasteStats(store: try #require(UserDefaults(suiteName: UUID().uuidString)))
+        let suite = UUID().uuidString
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let stats = PasteStats(store: defaults)
         #expect(stats.firstDay == nil)
         #expect(stats.perDay() == 0)
     }

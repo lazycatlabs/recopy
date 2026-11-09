@@ -14,11 +14,13 @@ enum PasteSimulator {
     static func pressCommandV() {
         let source = CGEventSource(stateID: .combinedSessionState)
         let key = CGKeyCode(kVK_ANSI_V)
+        var pressed = false
         for isDown in [true, false] {
             let event = CGEvent(keyboardEventSource: source, virtualKey: key, keyDown: isDown)
             event?.flags = .maskCommand
             event?.post(tap: .cghidEventTap)
+            if isDown { pressed = event != nil }
         }
-        PasteStats.shared.record()
+        if pressed { PasteStats.shared.record() }
     }
 }
