@@ -21,6 +21,7 @@ enum PasteSimulator {
             event?.post(tap: .cghidEventTap)
             if isDown { pressed = event != nil }
         }
-        if pressed { PasteStats.shared.record() }
+        // Without Accessibility (e.g. revoked while running) the posted ⌘V is dropped, so it isn't a paste.
+        if pressed && isTrusted { PasteStats.shared.record() }
     }
 }
