@@ -19,5 +19,6 @@ enum PasteSimulator {
             event?.flags = .maskCommand
             event?.post(tap: .cghidEventTap)
         }
+        PasteStats.shared.record()
     }
 }

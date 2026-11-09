@@ -23,6 +23,7 @@ struct PastingSettingsPage: View {
                 soundPicker(L(.settingsPasteSound), $session.settings.pasteSound)
             }
         }
+        StatsSection()
     }
 
     /// What on and off do, plus the missing permission when it's on but can't send ⌘V.

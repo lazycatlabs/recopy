@@ -1,6 +1,6 @@
 import Foundation
 
-/// Per-Mac preferences (vault bookmark, shortcuts, text size, window position).
+/// Per-Mac preferences (vault bookmark, shortcuts, text size, window position) and the paste count.
 /// End-to-end test runs get their own store, so they never change the user's.
 nonisolated enum AppDefaults {
     // UserDefaults is thread-safe; the SDK just doesn't mark it Sendable.
