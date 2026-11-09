@@ -298,6 +298,18 @@ S = {
     "recognitionFast": ("Fast", "Cepat"),
     "recognitionAccurate": ("Accurate", "Akurat"),
     "settingsPasting": ("Pasting", "Menempel"),
+    "pasteStatsTitle": ("Paste Count", "Jumlah Tempel"),
+    "pasteStatsToday": ("Today", "Hari Ini"),
+    "pasteStatsMonth": ("This Month", "Bulan Ini"),
+    "pasteStatsTotal": ("All Time", "Sepanjang Waktu"),
+    "pasteStatsFooter": (
+        "%1$@ pastes a day on average since %2$@. Counted on this Mac only.",
+        "Rata-rata %1$@ kali tempel per hari sejak %2$@. Hanya dihitung di Mac ini.",
+    ),
+    "pasteStatsEmpty": (
+        "Nothing pasted from ReCopy yet. Counted on this Mac only.",
+        "Belum ada yang ditempel dari ReCopy. Hanya dihitung di Mac ini.",
+    ),
     "settingsPasteDirectly": ("Paste after choosing an entry", "Langsung tempel setelah memilih entri"),
     "settingsPasteDirectlyFooter": (
         "On: ↩, double-click or ⌘1…9 pastes into the app you were in. Off: they only copy, and you press ⌘V yourself. ⌘↩ always only copies.",

@@ -5,7 +5,8 @@ import SwiftUI
 
 /// Sets ReCopy up for the E2E tests (`-e2e`): a fresh vault in a temporary folder with sample entries, a private
 /// clipboard, no global shortcut, and commands the tests send as distributed notifications
-/// ("panel", "panel:image", "settings", "welcome", "annotate", "hide", "pasteSpecial", "copy:imageFile").
+/// ("panel", "panel:image", "settings", "welcome", "annotate", "hide", "pasteSpecial", "copy:imageFile",
+/// "recordPaste").
 enum E2EFixtures {
     private static var observer: Any?
 
@@ -17,6 +18,7 @@ enum E2EFixtures {
         try? FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
         container.open(root)
         if let session = container.session { seed(session) }
+        if E2EMode.startsFresh { seedPasteStats() }
         return container
     }
 
@@ -43,6 +45,8 @@ enum E2EFixtures {
         case "pasteSpecial": delegate.panel.pasteSpecialLatest()
         // An image file copied in Finder. Written by the app: the test runner's own files are in its sandbox.
         case "copy:imageFile": copyImageFile()
+        // A paste counted, without sending ⌘V anywhere.
+        case "recordPaste": PasteStats.shared.record()
         // ⌘ pressed or released, through the app's own event queue (the test runner can't press keys system-wide).
         case "command:down", "command:up":
             let flags: NSEvent.ModifierFlags = command == "command:down" ? .command : []
@@ -54,6 +58,14 @@ enum E2EFixtures {
             }
         default: Log.clipboard.error("Unknown E2E command \(command, privacy: .public)")
         }
+    }
+
+    /// Paste Count reads 2 today and this month, 3 in all: two pastes now and one 40 days ago.
+    private static func seedPasteStats() {
+        let stats = PasteStats.shared
+        stats.record()
+        stats.record()
+        if let earlier = Calendar.current.date(byAdding: .day, value: -40, to: .now) { stats.record(at: earlier) }
     }
 
     /// The entries in the README screenshot: a pinned command, links, colors, an image, an email and some text.

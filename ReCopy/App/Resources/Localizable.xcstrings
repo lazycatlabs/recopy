@@ -2929,6 +2929,108 @@
         }
       }
     },
+    "pasteStatsEmpty": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing pasted from ReCopy yet. Counted on this Mac only."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belum ada yang ditempel dari ReCopy. Hanya dihitung di Mac ini."
+          }
+        }
+      }
+    },
+    "pasteStatsFooter": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ pastes a day on average since %2$@. Counted on this Mac only."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rata-rata %1$@ kali tempel per hari sejak %2$@. Hanya dihitung di Mac ini."
+          }
+        }
+      }
+    },
+    "pasteStatsMonth": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This Month"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bulan Ini"
+          }
+        }
+      }
+    },
+    "pasteStatsTitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paste Count"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jumlah Tempel"
+          }
+        }
+      }
+    },
+    "pasteStatsToday": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hari Ini"
+          }
+        }
+      }
+    },
+    "pasteStatsTotal": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All Time"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sepanjang Waktu"
+          }
+        }
+      }
+    },
     "previewUnavailable": {
       "extractionState": "manual",
       "localizations": {

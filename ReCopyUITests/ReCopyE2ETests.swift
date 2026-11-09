@@ -313,6 +313,29 @@ final class ReCopyE2ETests: XCTestCase {
         XCTAssertFalse(panel.staticTexts["#FF8C3C"].exists, "Deleted entries leave the history")
     }
 
+    func test14bPasteCountShowsTodayMonthAndAllTime() {
+        launch(open: "settings")
+        let settings = app.windows["settings"]
+        XCTAssertTrue(settings.waitForExistence(timeout: timeout))
+        openSettingsPage("pasting", in: settings)
+
+        // Seeded by E2EFixtures: two pastes today, one 40 days ago.
+        let today = element("settings.pasteStats.today")
+        reveal(today, in: settings)
+        XCTAssertEqual(today.value as? String, "2", "Today counts today's pastes")
+        XCTAssertEqual(element("settings.pasteStats.month").value as? String, "2", "This month leaves out last month's")
+        XCTAssertEqual(element("settings.pasteStats.total").value as? String, "3", "All time counts every paste")
+        // 3 pastes over 41 days.
+        let average = "0.1 pastes a day on average since"
+        let footer = settings.staticTexts.matching(NSPredicate(format: "value BEGINSWITH %@ OR label BEGINSWITH %@", average, average))
+        XCTAssertTrue(footer.firstMatch.exists, "The footer shows the daily average since the first paste")
+        screenshot(settings, "24b-settings-paste-count")
+
+        send("recordPaste")
+        XCTAssertTrue(waitUntil { today.value as? String == "3" }, "A new paste shows up at once")
+        XCTAssertEqual(element("settings.pasteStats.total").value as? String, "4")
+    }
+
     func test15SelectingSeveralEntriesPastesThemTogether() {
         launch(open: "panel")
         XCTAssertTrue(element("panel.search").waitForExistence(timeout: timeout))
