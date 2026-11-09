@@ -3,6 +3,13 @@
 What changed in each version of ReCopy (called Copaste before). The newest version is first. Each version's section is also the text for
 its GitHub release (tag `vX.Y.Z`).
 
+## 0.12.0 — 2026-11-09
+
+### New
+
+- **Paste Count** in Settings › Pasting: how many times you pasted from ReCopy today, this month and in all, with
+  your daily average since the first paste. It's counted on each Mac separately and kept out of your vault.
+
 ## 0.11.2 — 2026-11-06
 
 ### Changed
