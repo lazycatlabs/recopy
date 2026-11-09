@@ -36,7 +36,6 @@ extension PastingSettingsPage {
                     .foregroundStyle(.tint)
             }
             .frame(maxWidth: .infinity)
-            .accessibilityElement(children: .combine)
         }
     }
 }
