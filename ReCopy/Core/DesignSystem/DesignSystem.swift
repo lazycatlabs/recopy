@@ -157,6 +157,9 @@ enum Metrics {
         static let previewMaxPixelSize: CGFloat = 2048
         /// Memory the decoded images and thumbnails may use before the oldest are dropped.
         static let imageCacheBytes = 64 * 1024 * 1024
+        /// The play mark on a video's icon, as a share of the icon's size, and its shadow.
+        static let playBadgeScale: CGFloat = 0.35
+        static let playBadgeShadow: CGFloat = 1
         /// Between checks that the previous app is in front again, and after it is, before sending ⌘V.
         static let pasteDelay: TimeInterval = 0.05
         /// Gives up waiting for the previous app after this many checks (one second) and sends ⌘V anyway.

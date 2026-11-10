@@ -21,6 +21,8 @@ final class ClipboardSession {
     /// The code language of text entries, by content hash, so each text is looked at once.
     @ObservationIgnored private var languages: [String: CodeLanguage?] = [:]
     @ObservationIgnored private var languageNames: [String: String] = [:]
+    /// The folder of the video or audio file Paste Special last put on the clipboard, removed once it's replaced.
+    @ObservationIgnored private var exportFolder: URL?
 
     @ObservationIgnored let repository: ClipRepository
     @ObservationIgnored let pasteboard: SystemPasteboard
@@ -205,22 +207,62 @@ final class ClipboardSession {
     @discardableResult
     func writeConverted(_ images: [ConvertedImage], format: ImageFormat, for items: [ClipItem], pasting: Bool) -> Bool {
         guard !images.isEmpty, images.count == items.count else { return false }
-        let folder = FileManager.default.temporaryDirectory.appending(path: "PasteSpecial")
         let names = ClipUseCases.uniqueNames(items.map { item in
             let name = (item.kind == .file ? item.files?.first?.name : nil) ?? L(.imageFileName)
             return (name as NSString).deletingPathExtension
         })
-        let urls = names.map { folder.appending(path: $0).appendingPathExtension(for: format.type) }
         do {
-            try? FileManager.default.removeItem(at: folder)
-            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            let folder = try emptyPasteSpecialFolder()
+            let urls = names.map { folder.appending(path: $0).appendingPathExtension(for: format.type) }
             for (image, url) in zip(images, urls) { try image.data.write(to: url, options: .atomic) }
+            guard writeFiles(urls, for: items, pasting: pasting) else { return false }
+            removeExportFolder()
+            return true
         } catch {
             Log.storage.error("Paste Special write failed: \(error.localizedDescription, privacy: .public)")
             NSApp.presentError(error)
             return false
         }
-        pasteboard.write(.files(urls))
+    }
+
+    /// The temporary folder Paste Special writes its files to, emptied of the previous ones.
+    func emptyPasteSpecialFolder() throws -> URL {
+        let folder = FileManager.default.temporaryDirectory.appending(path: "PasteSpecial")
+        try? FileManager.default.removeItem(at: folder)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        return folder
+    }
+
+    /// Puts a video or audio file Paste Special exported to a folder of its own on the clipboard, where it stays. The
+    /// previous files are removed only after that, so the clipboard never points at a deleted file.
+    /// - Returns: whether it's on the clipboard; if not, the previous files are kept and the new one is removed.
+    @discardableResult
+    func writeExported(_ file: URL, for item: ClipItem, pasting: Bool) -> Bool {
+        guard writeFiles([file], for: [item], pasting: pasting) else {
+            try? FileManager.default.removeItem(at: file.deletingLastPathComponent())
+            return false
+        }
+        removeExportFolder()
+        exportFolder = file.deletingLastPathComponent()
+        try? FileManager.default.removeItem(at: FileManager.default.temporaryDirectory.appending(path: "PasteSpecial"))
+        return true
+    }
+
+    private func removeExportFolder() {
+        if let exportFolder { try? FileManager.default.removeItem(at: exportFolder) }
+        exportFolder = nil
+    }
+
+    /// Puts files Paste Special made on the clipboard and counts a paste or a copy of the entries they came from.
+    /// - Returns: whether the clipboard took them; a failure is shown to the user and nothing is counted.
+    @discardableResult
+    func writeFiles(_ urls: [URL], for items: [ClipItem], pasting: Bool) -> Bool {
+        guard pasteboard.write(.files(urls)) else {
+            Log.clipboard.error("Paste Special couldn't put \(urls.count) files on the clipboard")
+            // A failure, not a confirmation: shown even with confirmation toasts turned off.
+            onToast?(L(.pasteSpecialClipboardFailed))
+            return false
+        }
         countUse(of: items, pasting: pasting)
         return true
     }

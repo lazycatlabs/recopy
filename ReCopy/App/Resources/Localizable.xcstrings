@@ -2623,6 +2623,23 @@
         }
       }
     },
+    "pasteSpecialClipboardFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t put the converted file on the clipboard"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "File hasil konversi tidak bisa ditaruh di clipboard"
+          }
+        }
+      }
+    },
     "pasteSpecialConverting": {
       "extractionState": "manual",
       "localizations": {
@@ -2653,6 +2670,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Terdeteksi: %@"
+          }
+        }
+      }
+    },
+    "pasteSpecialEstimateNote": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sizes are estimates"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ukuran hanya perkiraan"
           }
         }
       }
@@ -2742,19 +2776,53 @@
         }
       }
     },
+    "pasteSpecialLossless": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lossless"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lossless"
+          }
+        }
+      }
+    },
+    "pasteSpecialMediaFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t convert the file"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "File tidak bisa dikonversi"
+          }
+        }
+      }
+    },
     "pasteSpecialNoImage": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "The last copy isn’t an image or text"
+            "value": "The last copy isn’t an image, text, video or audio file"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Salinan terakhir bukan gambar atau teks"
+            "value": "Salinan terakhir bukan gambar, teks, video, atau file audio"
           }
         }
       }
@@ -2772,6 +2840,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tempel Khusus hanya untuk beberapa gambar, atau satu entri"
+          }
+        }
+      }
+    },
+    "pasteSpecialOriginal": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Original: %@"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asli: %@"
+          }
+        }
+      }
+    },
+    "pasteSpecialOriginalResolution": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Original size"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ukuran asli"
           }
         }
       }
@@ -2840,6 +2942,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Format Ulang"
+          }
+        }
+      }
+    },
+    "pasteSpecialRemoveAudio": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove audio"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hapus audio"
           }
         }
       }

@@ -11,6 +11,10 @@ on:
         type: boolean
         default: false
 
+# Reading the code is all the jobs need.
+permissions:
+  contents: read
+
 concurrency:
   group: pr-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -46,6 +50,9 @@ jobs:
     name: Build & unit tests
     runs-on: macos-26
     needs: lint
+    # A normal run takes about 3 minutes; a hung xcodebuild would otherwise hold the runner for 6 hours. The test
+    # step stops first, so the results still upload.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -59,6 +66,7 @@ jobs:
           command -v xcbeautify || brew install xcbeautify
 
       - name: Run unit tests
+        timeout-minutes: 15
         run: |
           set -o pipefail
           xcodebuild test \
@@ -80,6 +88,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && inputs.ui_tests
     runs-on: macos-26
     needs: test
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -91,6 +100,7 @@ jobs:
         run: command -v xcbeautify || brew install xcbeautify
 
       - name: Run UI tests
+        timeout-minutes: 25
         run: |
           set -o pipefail
           xcodebuild test \

@@ -1,4 +1,5 @@
 import AppKit
+import AVFoundation
 import ImageIO
 
 extension NSImage {
@@ -55,5 +56,24 @@ enum ImageCache {
         let image = NSImage(cgImage: cgImage, size: .zero)
         cache.setObject(image, forKey: key, cost: cgImage.bytesPerRow * cgImage.height)
         return image
+    }
+
+    /// A frame from early in a video, for its icon: decoded off the main thread, no larger than `maxPixelSize`.
+    static func videoFrame(at url: URL, maxPixelSize: CGFloat) async -> NSImage? {
+        let key = "\(url.path)#frame\(Int(maxPixelSize))" as NSString
+        if let cached = cache.object(forKey: key) { return cached }
+        guard let frame = await frame(of: url, maxPixelSize: maxPixelSize) else { return nil }
+        let image = NSImage(cgImage: frame, size: .zero)
+        cache.setObject(image, forKey: key, cost: frame.bytesPerRow * frame.height)
+        return image
+    }
+
+    /// A second in, past a fade from black; the first frame for shorter videos.
+    @concurrent nonisolated private static func frame(of url: URL, maxPixelSize: CGFloat) async -> CGImage? {
+        let generator = AVAssetImageGenerator(asset: AVURLAsset(url: url))
+        generator.appliesPreferredTrackTransform = true
+        generator.maximumSize = CGSize(width: maxPixelSize, height: maxPixelSize)
+        if let frame = try? await generator.image(at: CMTime(seconds: 1, preferredTimescale: 600)).image { return frame }
+        return try? await generator.image(at: .zero).image
     }
 }

@@ -47,7 +47,12 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
         specialPanel?.orderOut(nil)
         if !isOpen {
             let front = NSWorkspace.shared.frontmostApplication
-            previousApp = front == .current ? nil : front
+            // ReCopy in front while a media file is still being read (no sheet yet): keep the app to return to.
+            if front != .current {
+                previousApp = front
+            } else if model.mediaPasteSpecial == nil {
+                previousApp = nil
+            }
         }
         model.reset()
         model.selectedID = id
@@ -90,6 +95,9 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
         specialPanel?.orderOut(nil)
         model.pasteSpecial = nil
         model.textPasteSpecial = nil
+        // Closing stops a video or audio export that's still running.
+        model.mediaPasteSpecial?.cancel()
+        model.mediaPasteSpecial = nil
         if let keyMonitor { NSEvent.removeMonitor(keyMonitor) }
         keyMonitor = nil
         // Hand the focus back to the app the user was in, so a paste (or ⌘V afterwards) lands in its window
@@ -313,7 +321,7 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
     }
 
     /// The global Paste Special shortcut: the options for the latest copy, at the pointer, if it's an image, an
-    /// image file or text. Otherwise a toast says so.
+    /// image file, text, or a video or audio file. Otherwise a toast says so.
     func pasteSpecialLatest() {
         guard let session else { return }
         // The copy just made must be the latest, even if the clipboard wasn't checked since.
@@ -324,6 +332,8 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
             show = { self.showPasteSpecial(PasteSpecialModel(sources: [.init(item: item, url: source)])) }
         } else if let item, item.kind == .text, let text = item.text, !text.isEmpty {
             show = { self.showPasteSpecial(TextPasteSpecialModel(items: [item], text: text)) }
+        } else if let item, let media = item.convertibleMedia {
+            show = { self.showPasteSpecial(MediaPasteSpecialModel(item: item, url: media.url, kind: media.kind)) }
         } else {
             return ToastPresenter.shared.show(L(.pasteSpecialNoImage))
         }
@@ -338,10 +348,14 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
     }
 
     /// Paste Special for entries from the list, the dialog matching what they are: images (one or several, converted
-    /// together) or one text entry. Several entries of other kinds, or of mixed kinds, get a toast instead.
+    /// together), one text entry, or one video or audio file. Several entries of other kinds, or of mixed kinds, get
+    /// a toast instead.
     private func pasteSpecial(_ items: [ClipItem], session: ClipboardSession) {
         let sources = items.compactMap { item in session.imageURL(of: item).map { PasteSpecialModel.Source(item: item, url: $0) } }
         if !sources.isEmpty, sources.count == items.count { return showPasteSpecial(PasteSpecialModel(sources: sources)) }
+        if items.count == 1, let item = items.first, let media = item.convertibleMedia {
+            return showPasteSpecial(MediaPasteSpecialModel(item: item, url: media.url, kind: media.kind))
+        }
         guard items.count == 1, let item = items.first, item.kind == .text, let text = item.text, !text.isEmpty else {
             return model.showToast(L(.pasteSpecialNoImageSelected))
         }
@@ -349,12 +363,14 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
     }
 
     private func showPasteSpecial(_ special: PasteSpecialModel) {
+        clearPasteSpecial()
         model.pasteSpecial = special
         present(PasteSpecialPage(model: special, finish: { [weak self] pasting in self?.finishPasteSpecial(pasting: pasting) },
                                  cancel: { [weak self] in self?.hide() }))
     }
 
     private func showPasteSpecial(_ special: TextPasteSpecialModel) {
+        clearPasteSpecial()
         model.textPasteSpecial = special
         present(TextPasteSpecialPage(model: special, finish: { [weak self] pasting in self?.finishPasteSpecial(pasting: pasting) },
                                      cancel: { [weak self] in self?.hide() }))
@@ -380,8 +396,9 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
         self.panel?.orderOut(nil)
     }
 
-    /// Puts Paste Special's result on the clipboard (converted images as files, or the rewritten text) and, when
-    /// pasting, sends ⌘V to the previous app.
+    /// Puts Paste Special's result on the clipboard (converted images or a converted video or audio file as files, or
+    /// the rewritten text) and, when pasting, sends ⌘V to the previous app. A video or audio file is exported first,
+    /// with its progress in the sheet.
     /// Paste is offered even with "Paste directly" off, since the user picked it here; without Accessibility it's copied.
     private func finishPasteSpecial(pasting: Bool) {
         guard let session else { return }
@@ -392,12 +409,16 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
         } else if let special = model.pasteSpecial {
             guard let images = special.converted() else { return ToastPresenter.shared.show(L(.pasteSpecialFailed)) }
             guard session.writeConverted(images, format: special.options.format, for: special.items, pasting: pastes) else { return }
+        } else if let special = model.mediaPasteSpecial {
+            return special.start { [weak self, weak session] file in
+                guard let self, let session, model.mediaPasteSpecial === special else { return }
+                guard session.writeExported(file, for: special.item, pasting: pastes) else { return }
+                closePasteSpecial(pasting: pasting, pastes: pastes)
+            }
         } else {
             return
         }
-        let target = previousApp
-        hide()
-        if pastes { pressCommandV(once: target) } else if pasting { PasteSimulator.requestAccess() }
+        closePasteSpecial(pasting: pasting, pastes: pastes)
     }
 
     func copy(_ items: [ClipItem]) {
@@ -483,5 +504,51 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
         } else if let text = item.text {
             FileExporter.save(Data(text.utf8), name: L(.textFileName), type: .plainText)
         }
+    }
+}
+
+// MARK: Paste Special for video and audio, and replacing a sheet
+
+extension ClipboardPanelController {
+    /// A new sheet replaces the open one: a running export stops and the old sheet's state goes, so it can't answer
+    /// for the new one.
+    private func clearPasteSpecial() {
+        model.mediaPasteSpecial?.cancel()
+        model.mediaPasteSpecial = nil
+        model.pasteSpecial = nil
+        model.textPasteSpecial = nil
+    }
+
+    /// Reads the file first (its length, size and sound), so the sheet opens with every option in place.
+    /// The sheet already open stays until the file's been read; a running export stops now.
+    private func showPasteSpecial(_ special: MediaPasteSpecialModel) {
+        model.mediaPasteSpecial?.cancel()
+        model.mediaPasteSpecial = special
+        Task { [weak self] in
+            let readable = await special.read()
+            guard let self else { return }
+            guard readable else {
+                if model.mediaPasteSpecial === special { model.mediaPasteSpecial = nil }
+                // Opened from the global shortcut with no window to close: give the keyboard back here.
+                if !isOpen, let previousApp, !previousApp.isTerminated {
+                    NSApp.yieldActivation(to: previousApp)
+                    previousApp.activate(from: .current)
+                    self.previousApp = nil
+                }
+                return ToastPresenter.shared.show(L(.pasteSpecialMediaFailed))
+            }
+            guard model.mediaPasteSpecial === special else { return }
+            model.pasteSpecial = nil
+            model.textPasteSpecial = nil
+            present(MediaPasteSpecialPage(model: special,
+                                          finish: { [weak self] pasting in self?.finishPasteSpecial(pasting: pasting) },
+                                          cancel: { [weak self] in self?.hide() }))
+        }
+    }
+
+    private func closePasteSpecial(pasting: Bool, pastes: Bool) {
+        let target = previousApp
+        hide()
+        if pastes { pressCommandV(once: target) } else if pasting { PasteSimulator.requestAccess() }
     }
 }

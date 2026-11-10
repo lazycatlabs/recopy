@@ -5,7 +5,9 @@ nonisolated enum SupportLinks {
     static let email = "help.me@lazycatlabs.com"
     static let website = URL(string: "https://recopy.lazycatlabs.com")!
     static let sourceCode = URL(string: "https://github.com/lazycatlabs/recopy")!
-    static let license = URL(string: "https://github.com/lazycatlabs/recopy/blob/main/LICENSE")!
+    /// The App Store build links to gnu.org: the repository links to sponsors and the GitHub download (App Review 3.1.1).
+    static let license = URL(string: Distribution.isAppStore ? "https://www.gnu.org/licenses/gpl-3.0.html"
+                                                             : "https://github.com/lazycatlabs/recopy/blob/main/LICENSE")!
 
     static var appVersion: String {
         let info = Bundle.main.infoDictionary
