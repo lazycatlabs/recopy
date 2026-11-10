@@ -5,6 +5,9 @@ import Foundation
 import Testing
 @testable import ReCopy
 
+/// One at a time, as the encoders share the CI's virtual Mac, and with a time limit so a stuck encoder fails the test
+/// instead of hanging the job.
+@Suite(.serialized, .timeLimit(.minutes(1)))
 struct MediaPasteSpecialTests {
     private func temporaryURL(_ ext: String) -> URL {
         FileManager.default.temporaryDirectory.appending(path: "\(UUID().uuidString).\(ext)")
@@ -41,7 +44,10 @@ struct MediaPasteSpecialTests {
         #expect(writer.startWriting())
         writer.startSession(atSourceTime: .zero)
         for frame in 0..<10 {
-            while !input.isReadyForMoreMediaData { try await Task.sleep(for: .milliseconds(5)) }
+            while !input.isReadyForMoreMediaData {
+                if writer.status == .failed { throw try #require(writer.error) }
+                try await Task.sleep(for: .milliseconds(5))
+            }
             let pool = try #require(adaptor.pixelBufferPool)
             var buffer: CVPixelBuffer?
             CVPixelBufferPoolCreatePixelBuffer(nil, pool, &buffer)
