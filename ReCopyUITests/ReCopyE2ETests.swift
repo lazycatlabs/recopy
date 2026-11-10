@@ -1,4 +1,5 @@
 import AppKit
+import AVFoundation
 import XCTest
 
 /// End-to-end tests: launch the real app (in its `-e2e` mode: a throwaway vault with sample entries, a private
@@ -541,6 +542,76 @@ final class ReCopyE2ETests: XCTestCase {
                       "Indented JSON in a code fence: \(clipboard.string(forType: .string) ?? "nothing")")
     }
 
+    func test20iPasteSpecialShrinksACopiedVideo() throws {
+        _ = parkPointer()
+        send("copy:videoFile")
+        // Made by the app, then recorded on its next clipboard check.
+        RunLoop.current.run(until: .now.addingTimeInterval(4))
+        send("pasteSpecial")
+
+        let special = element("pasteSpecialPanel")
+        XCTAssertTrue(special.waitForExistence(timeout: timeout), "The shortcut opens Paste Special for the copied video")
+        XCTAssertTrue(text(of: element("pasteSpecial.original")).contains("1280×720"), text(of: element("pasteSpecial.original")))
+        XCTAssertTrue(element("pasteSpecial.option.avc720").exists)
+        XCTAssertFalse(element("pasteSpecial.option.avc1080").exists, "No preset scales the 720p video up")
+        let smallest = element("pasteSpecial.option.avc480")
+        XCTAssertTrue(waitUntil { self.text(of: smallest).contains("≈") }, "Estimated before picking: \(text(of: smallest))")
+        screenshot(special, "48-paste-special-video-estimates")
+
+        smallest.click()
+        pick("MOV", in: special)
+        let removeAudio = element("pasteSpecial.removeAudio")
+        XCTAssertTrue(removeAudio.isEnabled, "The video has sound to remove")
+        removeAudio.click()
+        screenshot(special, "49-paste-special-video-480p-mov-no-audio")
+
+        app.typeKey(.return, modifierFlags: .command)
+        XCTAssertTrue(waitUntil { !special.exists }, "⌘↩ exports, copies and closes")
+        let file = try XCTUnwrap(copiedFiles().first)
+        XCTAssertEqual(file.lastPathComponent, "Sample.mov", "Named after the copied file, in the chosen type")
+        let video = try result {
+            let asset = AVURLAsset(url: file)
+            let track = try await asset.loadTracks(withMediaType: .video).first
+            let size = try await track?.load(.naturalSize) ?? .zero
+            return (size, try await asset.loadTracks(withMediaType: .audio).count)
+        }
+        XCTAssertEqual(video.0, CGSize(width: 640, height: 360), "Scaled down to 480p")
+        XCTAssertEqual(video.1, 0, "Without its sound")
+
+        send("panel")
+        XCTAssertTrue(element("panel.search").waitForExistence(timeout: timeout))
+        RunLoop.current.run(until: .now.addingTimeInterval(1))
+        screenshot(panel, "50-video-icon-in-list")
+    }
+
+    func test20jPasteSpecialConvertsACopiedAudioFile() throws {
+        _ = parkPointer()
+        send("copy:audioFile")
+        RunLoop.current.run(until: .now.addingTimeInterval(3))
+        send("pasteSpecial")
+
+        let special = element("pasteSpecialPanel")
+        XCTAssertTrue(special.waitForExistence(timeout: timeout), "The shortcut opens Paste Special for the copied audio file")
+        XCTAssertTrue(text(of: element("pasteSpecial.original")).contains("0:03"), text(of: element("pasteSpecial.original")))
+        XCTAssertFalse(element("pasteSpecial.container").exists, "No video file types for audio")
+        XCTAssertFalse(element("pasteSpecial.removeAudio").exists)
+        let aac = element("pasteSpecial.option.aac64")
+        XCTAssertTrue(waitUntil { self.text(of: aac).contains("≈") }, "Estimated before picking: \(text(of: aac))")
+        screenshot(special, "51-paste-special-audio-estimates")
+
+        aac.click()
+        app.typeKey(.return, modifierFlags: .command)
+        XCTAssertTrue(waitUntil { !special.exists }, "⌘↩ converts, copies and closes")
+        let file = try XCTUnwrap(copiedFiles().first)
+        XCTAssertEqual(file.lastPathComponent, "Sample.m4a")
+        let audio = try AVAudioFile(forReading: file)
+        XCTAssertEqual(Double(audio.length) / audio.fileFormat.sampleRate, 3, accuracy: 0.1)
+
+        send("panel")
+        XCTAssertTrue(element("panel.search").waitForExistence(timeout: timeout))
+        screenshot(panel, "52-audio-icon-in-list")
+    }
+
     func test20fCodeFilterMarksCodeAndOpensTextPasteSpecial() {
         launch(open: "panel")
         XCTAssertTrue(element("panel.search").waitForExistence(timeout: timeout))
@@ -844,6 +915,16 @@ final class ReCopyE2ETests: XCTestCase {
         }, "Picked \(title) (value: \(String(describing: button.value)))")
     }
 
+    /// Runs async work (e.g. AVFoundation's loading) from a test, keeping the run loop going until it's done.
+    private func result<T: Sendable>(of work: @escaping @Sendable () async throws -> T) throws -> T {
+        let box = ResultBox<T>()
+        Task {
+            do { box.value = .success(try await work()) } catch { box.value = .failure(error) }
+        }
+        XCTAssertTrue(waitUntil { box.value != nil }, "Finished")
+        return try XCTUnwrap(box.value).get()
+    }
+
     /// A button's or text's visible text, whichever XCUITest fills in.
     private func text(of element: XCUIElement) -> String {
         [element.title, element.label, element.value as? String ?? ""].first { !$0.isEmpty } ?? ""
@@ -882,4 +963,9 @@ final class ReCopyE2ETests: XCTestCase {
         attachment.lifetime = .keepAlways
         add(attachment)
     }
+}
+
+/// Holds the result of async work for `result(of:)`; written once by the task, then read by the test.
+private final class ResultBox<T>: @unchecked Sendable {
+    var value: Result<T, Error>?
 }

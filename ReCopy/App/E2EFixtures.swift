@@ -6,7 +6,7 @@ import SwiftUI
 /// Sets ReCopy up for the E2E tests (`-e2e`): a fresh vault in a temporary folder with sample entries, a private
 /// clipboard, no global shortcut, and commands the tests send as distributed notifications
 /// ("panel", "panel:image", "settings", "welcome", "annotate", "hide", "pasteSpecial", "copy:imageFile",
-/// "recordPaste").
+/// "copy:videoFile", "copy:audioFile", "recordPaste").
 enum E2EFixtures {
     private static var observer: Any?
 
@@ -45,6 +45,8 @@ enum E2EFixtures {
         case "pasteSpecial": delegate.panel.pasteSpecialLatest()
         // An image file copied in Finder. Written by the app: the test runner's own files are in its sandbox.
         case "copy:imageFile": copyImageFile()
+        // A video (Sample.mov, 1280 × 720 with sound) or an audio file (Sample.wav) copied in Finder, made by the app.
+        case "copy:videoFile", "copy:audioFile": Task { await copyMediaFile(video: command == "copy:videoFile") }
         // A paste counted, without sending ⌘V anywhere.
         case "recordPaste": PasteStats.shared.record()
         // ⌘ pressed or released, through the app's own event queue (the test runner can't press keys system-wide).
@@ -112,6 +114,19 @@ enum E2EFixtures {
         let pasteboard = NSPasteboard(name: NSPasteboard.Name(E2EMode.defaultsSuite))
         pasteboard.clearContents()
         pasteboard.writeObjects([url as NSURL])
+    }
+
+    private static func copyMediaFile(video: Bool) async {
+        let folder = FileManager.default.temporaryDirectory.appending(path: "recopy-e2e-files-\(UUID().uuidString)")
+        do {
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            let url = try await E2EMediaFixtures.make(video: video, in: folder)
+            let pasteboard = NSPasteboard(name: NSPasteboard.Name(E2EMode.defaultsSuite))
+            pasteboard.clearContents()
+            pasteboard.writeObjects([url as NSURL])
+        } catch {
+            Log.clipboard.error("E2E sample media: \(error.localizedDescription, privacy: .public)")
+        }
     }
 
     private static let chartSize = CGSize(width: 1440, height: 900)
