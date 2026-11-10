@@ -21,6 +21,8 @@ final class ClipboardSession {
     /// The code language of text entries, by content hash, so each text is looked at once.
     @ObservationIgnored private var languages: [String: CodeLanguage?] = [:]
     @ObservationIgnored private var languageNames: [String: String] = [:]
+    /// The folder of the video or audio file Paste Special last put on the clipboard, removed once it's replaced.
+    @ObservationIgnored private var exportFolder: URL?
 
     @ObservationIgnored let repository: ClipRepository
     @ObservationIgnored let pasteboard: SystemPasteboard
@@ -214,6 +216,7 @@ final class ClipboardSession {
             let urls = names.map { folder.appending(path: $0).appendingPathExtension(for: format.type) }
             for (image, url) in zip(images, urls) { try image.data.write(to: url, options: .atomic) }
             writeFiles(urls, for: items, pasting: pasting)
+            removeExportFolder()
             return true
         } catch {
             Log.storage.error("Paste Special write failed: \(error.localizedDescription, privacy: .public)")
@@ -230,22 +233,18 @@ final class ClipboardSession {
         return folder
     }
 
-    /// Moves a file Paste Special exported elsewhere into its folder (replacing the previous files only now that the new
-    /// one is ready) and puts it on the clipboard.
-    /// - Returns: whether it's on the clipboard; a failed move is reported to the user.
-    @discardableResult
-    func writeExported(_ file: URL, for item: ClipItem, pasting: Bool) -> Bool {
-        defer { try? FileManager.default.removeItem(at: file.deletingLastPathComponent()) }
-        do {
-            let url = try emptyPasteSpecialFolder().appending(path: file.lastPathComponent)
-            try FileManager.default.moveItem(at: file, to: url)
-            writeFiles([url], for: [item], pasting: pasting)
-            return true
-        } catch {
-            Log.storage.error("Paste Special write failed: \(error.localizedDescription, privacy: .public)")
-            NSApp.presentError(error)
-            return false
-        }
+    /// Puts a video or audio file Paste Special exported to a folder of its own on the clipboard, where it stays. The
+    /// previous files are removed only after that, so the clipboard never points at a deleted file.
+    func writeExported(_ file: URL, for item: ClipItem, pasting: Bool) {
+        writeFiles([file], for: [item], pasting: pasting)
+        removeExportFolder()
+        exportFolder = file.deletingLastPathComponent()
+        try? FileManager.default.removeItem(at: FileManager.default.temporaryDirectory.appending(path: "PasteSpecial"))
+    }
+
+    private func removeExportFolder() {
+        if let exportFolder { try? FileManager.default.removeItem(at: exportFolder) }
+        exportFolder = nil
     }
 
     /// Puts files Paste Special made on the clipboard and counts a paste or a copy of the entries they came from.

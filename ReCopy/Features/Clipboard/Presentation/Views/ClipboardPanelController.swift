@@ -404,8 +404,8 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
             guard session.writeConverted(images, format: special.options.format, for: special.items, pasting: pastes) else { return }
         } else if let special = model.mediaPasteSpecial {
             return special.start { [weak self, weak session] file in
-                guard let self, let session, model.mediaPasteSpecial === special,
-                      session.writeExported(file, for: special.item, pasting: pastes) else { return }
+                guard let self, let session, model.mediaPasteSpecial === special else { return }
+                session.writeExported(file, for: special.item, pasting: pastes)
                 closePasteSpecial(pasting: pasting, pastes: pastes)
             }
         } else {
