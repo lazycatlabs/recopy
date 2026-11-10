@@ -67,6 +67,10 @@ jobs:
 
       - name: Run unit tests
         timeout-minutes: 15
+        # Hosted Macs can hang inside the system's video and audio encoders, so the tests that encode skip here.
+        # xcodebuild passes TEST_RUNNER_-prefixed variables to the tests without the prefix.
+        env:
+          TEST_RUNNER_RECOPY_SKIP_ENCODING: "1"
         run: |
           set -o pipefail
           xcodebuild test \
