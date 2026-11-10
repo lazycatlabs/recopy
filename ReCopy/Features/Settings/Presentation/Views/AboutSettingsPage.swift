@@ -20,7 +20,9 @@ struct AboutSettingsPage: View {
             if let url = SupportLinks.bugReport() {
                 SettingsRow(L(.supportBugReport), symbol: "ladybug") { Link(L(.supportBugReport), destination: url) }
             }
+            // The website offers the GitHub download and sponsor links.
             SettingsRow(L(.supportWebsite), symbol: "safari") { Link(L(.supportWebsite), destination: SupportLinks.website) }
+                .hiddenInAppStore()
         }
         // App Review only allows tips through In-App Purchase.
         SettingsGroup(L(.sponsorTitle), footer: L(.sponsorFooter)) {
