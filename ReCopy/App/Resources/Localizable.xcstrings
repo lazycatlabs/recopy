@@ -1171,6 +1171,57 @@
         }
       }
     },
+    "copyStatsEmpty": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing copied yet. Counted on this Mac only."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belum ada yang disalin. Hanya dihitung di Mac ini."
+          }
+        }
+      }
+    },
+    "copyStatsFooter": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ copies a day on average since %2$@. Counted on this Mac only."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rata-rata %1$@ kali salin per hari sejak %2$@. Hanya dihitung di Mac ini."
+          }
+        }
+      }
+    },
+    "copyStatsTitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy Count"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jumlah Salin"
+          }
+        }
+      }
+    },
     "dateFilterAnyTime": {
       "extractionState": "manual",
       "localizations": {

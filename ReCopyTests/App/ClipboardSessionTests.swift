@@ -5,6 +5,24 @@ import Testing
 
 @MainActor
 struct ClipboardSessionTests {
+    @Test func copiesAreCountedButPastesAreNot() throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        let suite = UUID().uuidString
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer {
+            try? FileManager.default.removeItem(at: root)
+            defaults.removePersistentDomain(forName: suite)
+        }
+        let copies = UsageStats(key: "copies", store: defaults)
+        let session = ClipboardSession(root: root, pasteboard: SystemPasteboard(pasteboard: NSPasteboard(name: .init(UUID().uuidString))),
+                                       copies: copies)
+        session.handle(Capture(content: .text("copied in another app")))
+        let item = try #require(session.items.first)
+        session.copy(item)
+        session.preparePaste(item)
+        #expect(copies.total == 2)
+    }
+
     @Test func annotatedImageBecomesANewEntry() throws {
         let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: root) }

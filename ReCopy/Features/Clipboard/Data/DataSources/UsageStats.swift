@@ -1,12 +1,14 @@
 import Foundation
 import Observation
 
-/// How many times the user pasted on this Mac, counted per day and kept in `AppDefaults` as
+/// How many times the user pasted or copied on this Mac, counted per day and kept in `AppDefaults` as
 /// `"2026-11-09": 12`. One small entry per day with a count, so it stays tiny for years.
 @Observable
 final class UsageStats {
     /// Every ⌘V: the ones ReCopy sends and the ones the user presses in any app.
     static let pastes = UsageStats(key: "pasteCounts")
+    /// Every copy ReCopy records or makes.
+    static let copies = UsageStats(key: "copyCounts")
 
     private(set) var counts: [String: Int]
     @ObservationIgnored private let store: UserDefaults
