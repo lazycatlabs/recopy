@@ -18,9 +18,8 @@ struct ImportSettingsPage: View {
                     .frame(width: Metrics.Settings.groupNameWidth)
                 } else {
                     Button(L(.importFromRaycast), action: prepare)
-                    #if !APP_STORE
-                        .disabled(!FileManager.default.fileExists(atPath: RaycastClipboardDataSource.folder.path))
-                    #endif
+                        .disabled(!Distribution.isAppStore
+                            && !FileManager.default.fileExists(atPath: RaycastClipboardDataSource.folder.path))
                         .accessibilityIdentifier("settings.importRaycast")
                 }
             }
@@ -44,7 +43,7 @@ struct ImportSettingsPage: View {
 
     /// Raycast's clipboard folder. The sandboxed App Store build can't read it until the user picks it.
     private func raycastFolder() -> URL? {
-        #if APP_STORE
+        guard Distribution.isAppStore else { return RaycastClipboardDataSource.folder }
         let panel = NSOpenPanel()
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
@@ -53,9 +52,6 @@ struct ImportSettingsPage: View {
         panel.message = L(.importPickFolder)
         NSApp.activate()
         return panel.runModal() == .OK ? panel.url : nil
-        #else
-        return RaycastClipboardDataSource.folder
-        #endif
     }
 
     private func start() {

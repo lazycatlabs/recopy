@@ -1,1 +1,1 @@
-history,snippets,pasteboard,screenshot,ocr,sync,icloud,annotate,notes,menu bar,raycast,search,text
+history,snippets,pasteboard,screenshot,ocr,sync,icloud,annotate,notes,menu bar,search,text

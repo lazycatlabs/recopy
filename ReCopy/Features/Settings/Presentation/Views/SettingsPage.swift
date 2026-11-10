@@ -8,11 +8,7 @@ enum SettingsPane: String, CaseIterable, Identifiable {
 
     /// The panes this build shows. App Store copies are updated by the App Store, and may not point elsewhere.
     static var shown: [SettingsPane] {
-        #if APP_STORE
-        allCases.filter { $0 != .updates }
-        #else
-        allCases
-        #endif
+        Distribution.isAppStore ? allCases.filter { $0 != .updates } : allCases
     }
 
     var title: String {
@@ -76,11 +72,7 @@ enum SettingsPane: String, CaseIterable, Identifiable {
         case .updates: [.updateCheck, .changelogTitle, .updateDownload]
         case .about: [.aboutVersion, .aboutLicense, .aboutSourceCode, .supportFeedback, .supportBugReport, .supportWebsite]
         }
-        #if APP_STORE
-        let sponsors: [String] = []
-        #else
-        let sponsors = self == .about ? [L(.sponsorTitle)] + Sponsor.allCases.map(\.title) : []
-        #endif
+        let sponsors = self == .about && !Distribution.isAppStore ? [L(.sponsorTitle)] + Sponsor.allCases.map(\.title) : []
         return ([title, subtitle] + settings.map(L) + sponsors).joined(separator: " ")
     }
 

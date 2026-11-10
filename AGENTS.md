@@ -135,6 +135,9 @@ keep their own names. AppKit controllers that host a page (`ClipboardPanelContro
   `fastlane/metadata` with that version's `CHANGELOG.md` section as "What's New" (bullets ending in `<!-- github-only -->` are left out),
   and submits it for review.
   `mac beta` goes to TestFlight only, `mac metadata` updates the listing without a build. The App Store Connect API key
-  is read from `fastlane/.env` (see `.env.example`). `#if APP_STORE` hides the Updates pane and sponsor links (App
-  Review rules) and makes the Raycast import ask for its folder. The vault bookmark is security-scoped in every build.
+  is read from `fastlane/.env` (see `.env.example`). The App Store build is told apart by
+  `Distribution.isAppStore` (`Core/Platform/Distribution.swift`, set by the `APP_STORE` flag; don't add new `#if APP_STORE`).
+  Put `.hiddenInAppStore()` on any view App Review rejects: sponsor/donation links, links to pages that have them (the
+  GitHub repository, so Source Code is hidden and License goes to gnu.org), GitHub downloads and self-updates. It
+  also hides the Updates pane and makes the Raycast import ask for its folder. Keywords must not name other apps. The vault bookmark is security-scoped in every build.
   `AppStore/README.md` lists what lives where and the one-time setup in App Store Connect.

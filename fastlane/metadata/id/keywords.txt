@@ -1,1 +1,1 @@
-riwayat,history,paste,copy,snippet,screenshot,ocr,sinkron,icloud,anotasi,catatan,menu bar,raycast
+riwayat,history,paste,copy,snippet,screenshot,ocr,sinkron,icloud,anotasi,catatan,menu bar
