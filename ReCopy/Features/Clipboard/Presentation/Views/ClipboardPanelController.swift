@@ -47,7 +47,12 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
         specialPanel?.orderOut(nil)
         if !isOpen {
             let front = NSWorkspace.shared.frontmostApplication
-            previousApp = front == .current ? nil : front
+            // ReCopy in front while a media file is still being read (no sheet yet): keep the app to return to.
+            if front != .current {
+                previousApp = front
+            } else if model.mediaPasteSpecial == nil {
+                previousApp = nil
+            }
         }
         model.reset()
         model.selectedID = id
@@ -358,12 +363,14 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
     }
 
     private func showPasteSpecial(_ special: PasteSpecialModel) {
+        clearPasteSpecial()
         model.pasteSpecial = special
         present(PasteSpecialPage(model: special, finish: { [weak self] pasting in self?.finishPasteSpecial(pasting: pasting) },
                                  cancel: { [weak self] in self?.hide() }))
     }
 
     private func showPasteSpecial(_ special: TextPasteSpecialModel) {
+        clearPasteSpecial()
         model.textPasteSpecial = special
         present(TextPasteSpecialPage(model: special, finish: { [weak self] pasting in self?.finishPasteSpecial(pasting: pasting) },
                                      cancel: { [weak self] in self?.hide() }))
@@ -405,7 +412,7 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
         } else if let special = model.mediaPasteSpecial {
             return special.start { [weak self, weak session] file in
                 guard let self, let session, model.mediaPasteSpecial === special else { return }
-                session.writeExported(file, for: special.item, pasting: pastes)
+                guard session.writeExported(file, for: special.item, pasting: pastes) else { return }
                 closePasteSpecial(pasting: pasting, pastes: pastes)
             }
         } else {
@@ -500,11 +507,22 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
     }
 }
 
-// MARK: Paste Special for video and audio
+// MARK: Paste Special for video and audio, and replacing a sheet
 
 extension ClipboardPanelController {
+    /// A new sheet replaces the open one: a running export stops and the old sheet's state goes, so it can't answer
+    /// for the new one.
+    private func clearPasteSpecial() {
+        model.mediaPasteSpecial?.cancel()
+        model.mediaPasteSpecial = nil
+        model.pasteSpecial = nil
+        model.textPasteSpecial = nil
+    }
+
     /// Reads the file first (its length, size and sound), so the sheet opens with every option in place.
+    /// The sheet already open stays until the file's been read; a running export stops now.
     private func showPasteSpecial(_ special: MediaPasteSpecialModel) {
+        model.mediaPasteSpecial?.cancel()
         model.mediaPasteSpecial = special
         Task { [weak self] in
             let readable = await special.read()
@@ -520,6 +538,8 @@ extension ClipboardPanelController {
                 return ToastPresenter.shared.show(L(.pasteSpecialMediaFailed))
             }
             guard model.mediaPasteSpecial === special else { return }
+            model.pasteSpecial = nil
+            model.textPasteSpecial = nil
             present(MediaPasteSpecialPage(model: special,
                                           finish: { [weak self] pasting in self?.finishPasteSpecial(pasting: pasting) },
                                           cancel: { [weak self] in self?.hide() }))
