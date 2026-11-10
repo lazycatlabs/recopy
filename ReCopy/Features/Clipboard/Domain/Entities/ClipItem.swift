@@ -110,6 +110,18 @@ nonisolated struct ClipItem: Codable, Identifiable, Hashable, Sendable {
         }
     }
 
+    /// Video or audio, for a file entry whose first file is one. Paste Special converts it when it's the only file.
+    var mediaKind: MediaKind? {
+        guard kind == .file, let path = files?.first?.path else { return nil }
+        return MediaKind(fileExtension: URL(filePath: path).pathExtension)
+    }
+
+    /// The single video or audio file Paste Special can convert.
+    var convertibleMedia: (url: URL, kind: MediaKind)? {
+        guard files?.count == 1, let kind = mediaKind, let path = files?.first?.path else { return nil }
+        return (URL(filePath: path), kind)
+    }
+
     var color: ColorValue? { kind == .color ? text.flatMap(ColorValue.init(parsing:)) : nil }
 
     /// Everything a search should look at.

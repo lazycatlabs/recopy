@@ -205,24 +205,35 @@ final class ClipboardSession {
     @discardableResult
     func writeConverted(_ images: [ConvertedImage], format: ImageFormat, for items: [ClipItem], pasting: Bool) -> Bool {
         guard !images.isEmpty, images.count == items.count else { return false }
-        let folder = FileManager.default.temporaryDirectory.appending(path: "PasteSpecial")
         let names = ClipUseCases.uniqueNames(items.map { item in
             let name = (item.kind == .file ? item.files?.first?.name : nil) ?? L(.imageFileName)
             return (name as NSString).deletingPathExtension
         })
-        let urls = names.map { folder.appending(path: $0).appendingPathExtension(for: format.type) }
         do {
-            try? FileManager.default.removeItem(at: folder)
-            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            let folder = try emptyPasteSpecialFolder()
+            let urls = names.map { folder.appending(path: $0).appendingPathExtension(for: format.type) }
             for (image, url) in zip(images, urls) { try image.data.write(to: url, options: .atomic) }
+            writeFiles(urls, for: items, pasting: pasting)
+            return true
         } catch {
             Log.storage.error("Paste Special write failed: \(error.localizedDescription, privacy: .public)")
             NSApp.presentError(error)
             return false
         }
+    }
+
+    /// The temporary folder Paste Special writes its files to, emptied of the previous ones.
+    func emptyPasteSpecialFolder() throws -> URL {
+        let folder = FileManager.default.temporaryDirectory.appending(path: "PasteSpecial")
+        try? FileManager.default.removeItem(at: folder)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        return folder
+    }
+
+    /// Puts files Paste Special made on the clipboard and counts a paste or a copy of the entries they came from.
+    func writeFiles(_ urls: [URL], for items: [ClipItem], pasting: Bool) {
         pasteboard.write(.files(urls))
         countUse(of: items, pasting: pasting)
-        return true
     }
 
     /// Puts text rewritten by Paste Special on the clipboard, in a monospaced font if asked, and adds it to the history

@@ -20,10 +20,11 @@ final class ClipboardViewModel {
     @ObservationIgnored private var anchorID: UUID?
     @ObservationIgnored private var rangeIDs: Set<UUID> = []
     var showsActions = false
-    /// The Paste Special sheet for images or for text, while it's open.
+    /// The Paste Special sheet for images, text, or a video or audio file, while it's open.
     var pasteSpecial: PasteSpecialModel?
     var textPasteSpecial: TextPasteSpecialModel?
-    var showsPasteSpecial: Bool { pasteSpecial != nil || textPasteSpecial != nil }
+    var mediaPasteSpecial: MediaPasteSpecialModel?
+    var showsPasteSpecial: Bool { pasteSpecial != nil || textPasteSpecial != nil || mediaPasteSpecial != nil }
     /// A short confirmation shown at the bottom of the window, e.g. after copying an entry.
     private(set) var toast: String?
     @ObservationIgnored private var toastTask: Task<Void, Never>?
@@ -126,6 +127,8 @@ final class ClipboardViewModel {
         showsActions = false
         pasteSpecial = nil
         textPasteSpecial = nil
+        mediaPasteSpecial?.cancel()
+        mediaPasteSpecial = nil
         showsQuickPasteKeys = false
         toast = nil
     }
