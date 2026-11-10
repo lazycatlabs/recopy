@@ -1,3 +1,4 @@
+import AppKit
 import AVFoundation
 import CoreVideo
 import Foundation
@@ -111,6 +112,32 @@ struct MediaPasteSpecialTests {
                                                  info: MediaInfo(seconds: 1, hasAudio: false, sampleRate: 0, channels: 0),
                                                  to: output) { _ in }
         }
+    }
+
+    @MainActor @Test func exportReplacesThePreviousOneOnlyOnceItsOnTheClipboard() throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let board = NSPasteboard(name: .init(UUID().uuidString))
+        let session = ClipboardSession(root: root, pasteboard: SystemPasteboard(pasteboard: board))
+        let item = ClipItem(kind: .file, files: [ClipFile(path: "/tmp/Clip.mov", name: "Clip.mov")], hash: "m",
+                            firstCopied: .now, lastCopied: .now)
+        func export(_ name: String) throws -> URL {
+            let folder = FileManager.default.temporaryDirectory.appending(path: "PasteSpecialExport-\(UUID().uuidString)")
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            let file = folder.appending(path: name)
+            try Data("video".utf8).write(to: file)
+            return file
+        }
+        let first = try export("Clip.mov"), second = try export("Clip.mp4")
+
+        #expect(session.writeExported(first, for: item, pasting: false))
+        #expect(FileManager.default.fileExists(atPath: first.path), "Stays while it's on the clipboard")
+        #expect(session.writeExported(second, for: item, pasting: false))
+        let copied = board.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL]
+        #expect(copied == [second])
+        #expect(FileManager.default.fileExists(atPath: second.path))
+        #expect(!FileManager.default.fileExists(atPath: first.deletingLastPathComponent().path), "The replaced export is removed")
+        try? FileManager.default.removeItem(at: second.deletingLastPathComponent())
     }
 
     @Test func shrinksVideoToTheChosenSizeAndType() async throws {

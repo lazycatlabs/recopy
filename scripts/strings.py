@@ -100,6 +100,7 @@ S = {
     "pasteSpecialRemoveAudio": ("Remove audio", "Hapus audio"),
     "pasteSpecialEstimateNote": ("Sizes are estimates", "Ukuran hanya perkiraan"),
     "pasteSpecialMediaFailed": ("Couldn’t convert the file", "File tidak bisa dikonversi"),
+    "pasteSpecialClipboardFailed": ("Couldn’t put the converted file on the clipboard", "File hasil konversi tidak bisa ditaruh di clipboard"),
     "pasteSpecialReformat": ("Reformat", "Format Ulang"),
     "pasteSpecialPasteAs": ("Paste As", "Tempel Sebagai"),
     "pasteSpecialDetected": ("Detected: %@", "Terdeteksi: %@"),

@@ -215,7 +215,7 @@ final class ClipboardSession {
             let folder = try emptyPasteSpecialFolder()
             let urls = names.map { folder.appending(path: $0).appendingPathExtension(for: format.type) }
             for (image, url) in zip(images, urls) { try image.data.write(to: url, options: .atomic) }
-            writeFiles(urls, for: items, pasting: pasting)
+            guard writeFiles(urls, for: items, pasting: pasting) else { return false }
             removeExportFolder()
             return true
         } catch {
@@ -235,11 +235,17 @@ final class ClipboardSession {
 
     /// Puts a video or audio file Paste Special exported to a folder of its own on the clipboard, where it stays. The
     /// previous files are removed only after that, so the clipboard never points at a deleted file.
-    func writeExported(_ file: URL, for item: ClipItem, pasting: Bool) {
-        writeFiles([file], for: [item], pasting: pasting)
+    /// - Returns: whether it's on the clipboard; if not, the previous files are kept and the new one is removed.
+    @discardableResult
+    func writeExported(_ file: URL, for item: ClipItem, pasting: Bool) -> Bool {
+        guard writeFiles([file], for: [item], pasting: pasting) else {
+            try? FileManager.default.removeItem(at: file.deletingLastPathComponent())
+            return false
+        }
         removeExportFolder()
         exportFolder = file.deletingLastPathComponent()
         try? FileManager.default.removeItem(at: FileManager.default.temporaryDirectory.appending(path: "PasteSpecial"))
+        return true
     }
 
     private func removeExportFolder() {
@@ -248,9 +254,16 @@ final class ClipboardSession {
     }
 
     /// Puts files Paste Special made on the clipboard and counts a paste or a copy of the entries they came from.
-    func writeFiles(_ urls: [URL], for items: [ClipItem], pasting: Bool) {
-        pasteboard.write(.files(urls))
+    /// - Returns: whether the clipboard took them; a failure is shown to the user and nothing is counted.
+    @discardableResult
+    func writeFiles(_ urls: [URL], for items: [ClipItem], pasting: Bool) -> Bool {
+        guard pasteboard.write(.files(urls)) else {
+            Log.clipboard.error("Paste Special couldn't put \(urls.count) files on the clipboard")
+            announce(L(.pasteSpecialClipboardFailed))
+            return false
+        }
         countUse(of: items, pasting: pasting)
+        return true
     }
 
     /// Puts text rewritten by Paste Special on the clipboard, in a monospaced font if asked, and adds it to the history

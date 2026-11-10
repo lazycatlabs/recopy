@@ -2623,6 +2623,23 @@
         }
       }
     },
+    "pasteSpecialClipboardFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t put the converted file on the clipboard"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "File hasil konversi tidak bisa ditaruh di clipboard"
+          }
+        }
+      }
+    },
     "pasteSpecialConverting": {
       "extractionState": "manual",
       "localizations": {

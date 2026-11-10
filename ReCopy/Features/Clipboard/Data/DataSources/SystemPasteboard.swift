@@ -107,11 +107,14 @@ final class SystemPasteboard {
         return nil
     }
 
-    func write(_ payload: PasteboardPayload) {
+    /// - Returns: whether the clipboard took it.
+    @discardableResult
+    func write(_ payload: PasteboardPayload) -> Bool {
         pasteboard.clearContents()
-        pasteboard.writeObjects(Self.objects(payload))
+        let written = pasteboard.writeObjects(Self.objects(payload))
         // Our own write isn't a new copy.
         changeCount = pasteboard.changeCount
+        return written
     }
 
     private static func objects(_ payload: PasteboardPayload) -> [any NSPasteboardWriting] {
