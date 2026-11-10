@@ -48,7 +48,7 @@ enum E2EFixtures {
         // A video (Sample.mov, 1280 × 720 with sound) or an audio file (Sample.wav) copied in Finder, made by the app.
         case "copy:videoFile", "copy:audioFile": Task { await copyMediaFile(video: command == "copy:videoFile") }
         // A paste counted, without sending ⌘V anywhere.
-        case "recordPaste": PasteStats.shared.record()
+        case "recordPaste": UsageStats.pastes.record()
         // ⌘ pressed or released, through the app's own event queue (the test runner can't press keys system-wide).
         case "command:down", "command:up":
             let flags: NSEvent.ModifierFlags = command == "command:down" ? .command : []
@@ -64,7 +64,7 @@ enum E2EFixtures {
 
     /// Paste Count reads 2 today and this month, 3 in all: two pastes now and one 40 days ago.
     private static func seedPasteStats() {
-        let stats = PasteStats.shared
+        let stats = UsageStats.pastes
         stats.record()
         stats.record()
         if let earlier = Calendar.current.date(byAdding: .day, value: -40, to: .now) { stats.record(at: earlier) }

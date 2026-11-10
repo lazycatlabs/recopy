@@ -296,6 +296,12 @@ final class ClipboardSession {
         }
     }
 
+    /// The user pressed ⌘V in another app: counted, with the paste sound. ReCopy's own ⌘V is counted where it's sent.
+    func userPasted() {
+        UsageStats.pastes.record()
+        SoundPlayer.play(settings.pasteSound)
+    }
+
     /// The entry's title, cut short for a toast.
     func toastTitle(_ item: ClipItem) -> String {
         let title = item.title.isEmpty ? item.kind.title : item.title

@@ -314,8 +314,8 @@ S = {
         "Rata-rata %1$@ kali tempel per hari sejak %2$@. Hanya dihitung di Mac ini.",
     ),
     "pasteStatsEmpty": (
-        "Nothing pasted from ReCopy yet. Counted on this Mac only.",
-        "Belum ada yang ditempel dari ReCopy. Hanya dihitung di Mac ini.",
+        "Nothing pasted yet. Every ⌘V counts, in any app. Counted on this Mac only.",
+        "Belum ada yang ditempel. Setiap ⌘V dihitung, di aplikasi mana pun. Hanya dihitung di Mac ini.",
     ),
     "settingsPasteDirectly": ("Paste after choosing an entry", "Langsung tempel setelah memilih entri"),
     "settingsPasteDirectlyFooter": (

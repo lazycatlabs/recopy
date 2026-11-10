@@ -3054,13 +3054,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nothing pasted from ReCopy yet. Counted on this Mac only."
+            "value": "Nothing pasted yet. Every ⌘V counts, in any app. Counted on this Mac only."
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Belum ada yang ditempel dari ReCopy. Hanya dihitung di Mac ini."
+            "value": "Belum ada yang ditempel. Setiap ⌘V dihitung, di aplikasi mana pun. Hanya dihitung di Mac ini."
           }
         }
       }

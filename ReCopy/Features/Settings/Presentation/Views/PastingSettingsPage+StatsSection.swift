@@ -4,7 +4,7 @@ import SwiftUI
 extension PastingSettingsPage {
     /// Settings › Pasting › Paste Count: pastes today, this month and since the first one, with the daily average.
     struct StatsSection: View {
-        private let stats = PasteStats.shared
+        private let stats = UsageStats.pastes
         /// Today, moved on at midnight (also after waking past it), so an open Settings window doesn't keep yesterday's counts.
         @State private var now = Date.now
 
