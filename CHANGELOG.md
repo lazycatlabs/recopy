@@ -3,6 +3,22 @@
 What changed in each version of ReCopy (called Copaste before). The newest version is first. Each version's section is also the text for
 its GitHub release (tag `vX.Y.Z`).
 
+## 0.13.0 — 2026-11-10
+
+### New
+
+- **Paste Special for videos.** Make a copied video smaller before you paste it: pick its size (original, 4K,
+  1080p, 720p, 540p or 480p) and codec (HEVC or H.264), save it as MP4, MOV or M4V, and remove its sound if you
+  like. Sizes that would make the video bigger aren't offered.
+- **Paste Special for audio files.** Convert a copied audio file to AAC (64, 128, 192 or 256 kbps) or WAV.
+- Every option shows **how big the file will be** and how much smaller than the original, before you pick it.
+  Options that wouldn't save space are marked.
+- Video files in your history show a frame from the video, and audio files a waveform.
+
+### Fixed
+
+- If a converted image or file can't be put on the clipboard, ReCopy says so instead of pasting nothing.
+
 ## 0.12.0 — 2026-11-09
 
 ### New
