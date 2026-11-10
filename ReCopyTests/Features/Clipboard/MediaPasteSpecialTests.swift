@@ -5,9 +5,12 @@ import Foundation
 import Testing
 @testable import ReCopy
 
-/// One at a time, as the encoders share the CI's virtual Mac, and with a time limit so a stuck encoder fails the test
-/// instead of hanging the job.
-@Suite(.serialized, .timeLimit(.minutes(1)))
+/// Tests that encode video or audio skip on CI (the workflow sets `TEST_RUNNER_RECOPY_SKIP_ENCODING`): the hosted
+/// virtual Macs sometimes hang inside the system's encoders, where no time limit can stop the test. They run locally,
+/// and the E2E tests convert real files end to end.
+nonisolated private let encodes = ProcessInfo.processInfo.environment["RECOPY_SKIP_ENCODING"] == nil
+
+@Suite(.serialized)
 struct MediaPasteSpecialTests {
     private func temporaryURL(_ ext: String) -> URL {
         FileManager.default.temporaryDirectory.appending(path: "\(UUID().uuidString).\(ext)")
@@ -93,7 +96,7 @@ struct MediaPasteSpecialTests {
         #expect(AudioPreset.wav.sampleRate(for: 96_000) == 96_000)
     }
 
-    @Test(arguments: [AudioPreset.aac64, .wav])
+    @Test(.enabled(if: encodes), arguments: [AudioPreset.aac64, .wav])
     func convertsAudioCloseToItsEstimate(preset: AudioPreset) async throws {
         let source = try makeWAV(seconds: 3)
         let output = temporaryURL(preset == .wav ? "wav" : "m4a")
@@ -109,7 +112,7 @@ struct MediaPasteSpecialTests {
         #expect(abs(Double(bytes) - Double(estimate)) / Double(estimate) < 0.1, "\(bytes) bytes, estimated \(estimate)")
     }
 
-    @Test func videoWithoutSoundHasNoAudio() async throws {
+    @Test(.enabled(if: encodes)) func videoWithoutSoundHasNoAudio() async throws {
         let source = try await makeVideo()
         defer { try? FileManager.default.removeItem(at: source) }
         let output = temporaryURL("m4a")
@@ -146,7 +149,7 @@ struct MediaPasteSpecialTests {
         try? FileManager.default.removeItem(at: second.deletingLastPathComponent())
     }
 
-    @Test func shrinksVideoToTheChosenSizeAndType() async throws {
+    @Test(.enabled(if: encodes)) func shrinksVideoToTheChosenSizeAndType() async throws {
         let source = try await makeVideo()
         let output = temporaryURL("mp4")
         defer { [source, output].forEach { try? FileManager.default.removeItem(at: $0) } }
