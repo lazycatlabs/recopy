@@ -111,7 +111,7 @@ nonisolated enum MediaConverter {
         guard reader.startReading(), writer.startWriting() else { throw reader.error ?? writer.error ?? Failure.unreadable }
         writer.startSession(atSourceTime: .zero)
         do {
-            try await copySamples(from: readerOutput, to: input, seconds: info.seconds, progress: progress)
+            try await copySamples(from: readerOutput, to: input, of: writer, seconds: info.seconds, progress: progress)
             if reader.status == .failed { throw reader.error ?? Failure.unreadable }
         } catch {
             reader.cancelReading()
@@ -124,11 +124,13 @@ nonisolated enum MediaConverter {
         if writer.status != .completed { throw writer.error ?? Failure.unsupported }
     }
 
-    private static func copySamples(from output: AVAssetReaderOutput, to input: AVAssetWriterInput, seconds: Double,
-                                    progress: @Sendable (Double) -> Void) async throws {
+    private static func copySamples(from output: AVAssetReaderOutput, to input: AVAssetWriterInput, of writer: AVAssetWriter,
+                                    seconds: Double, progress: @Sendable (Double) -> Void) async throws {
         while let buffer = output.copyNextSampleBuffer() {
             // ponytail: polls the writer every few ms; requestMediaDataWhenReady if this ever shows up in a profile.
             while !input.isReadyForMoreMediaData {
+                // A failed writer is never ready again: stop instead of waiting forever.
+                if writer.status == .failed { throw writer.error ?? Failure.unsupported }
                 try Task.checkCancellation()
                 try await Task.sleep(for: .milliseconds(5))
             }

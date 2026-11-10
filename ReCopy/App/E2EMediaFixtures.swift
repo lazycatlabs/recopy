@@ -51,7 +51,10 @@ nonisolated enum E2EMediaFixtures {
         writer.startSession(atSourceTime: .zero)
         let count = seconds * Int(framesPerSecond)
         for index in 0..<count {
-            while !input.isReadyForMoreMediaData { try await Task.sleep(for: .milliseconds(5)) }
+            while !input.isReadyForMoreMediaData {
+                if writer.status == .failed { throw writer.error ?? Failure.setup }
+                try await Task.sleep(for: .milliseconds(5))
+            }
             guard let pool = adaptor.pixelBufferPool else { throw Failure.setup }
             var made: CVPixelBuffer?
             CVPixelBufferPoolCreatePixelBuffer(nil, pool, &made)
