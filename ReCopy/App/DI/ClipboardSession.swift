@@ -259,7 +259,8 @@ final class ClipboardSession {
     func writeFiles(_ urls: [URL], for items: [ClipItem], pasting: Bool) -> Bool {
         guard pasteboard.write(.files(urls)) else {
             Log.clipboard.error("Paste Special couldn't put \(urls.count) files on the clipboard")
-            announce(L(.pasteSpecialClipboardFailed))
+            // A failure, not a confirmation: shown even with confirmation toasts turned off.
+            onToast?(L(.pasteSpecialClipboardFailed))
             return false
         }
         countUse(of: items, pasting: pasting)
