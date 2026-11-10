@@ -70,7 +70,9 @@ enum SettingsPane: String, CaseIterable, Identifiable {
         case .privacy: [.settingsIgnoredApps, .settingsAddApp]
         case .importing: [.importFromRaycast]
         case .updates: [.updateCheck, .changelogTitle, .updateDownload]
-        case .about: [.aboutVersion, .aboutLicense, .aboutSourceCode, .supportFeedback, .supportBugReport, .supportWebsite]
+        // Source Code and Website are hidden in the App Store build, so they're not searched there either.
+        case .about: [.aboutVersion, .aboutLicense, .supportFeedback, .supportBugReport]
+            + (Distribution.isAppStore ? [] : [.aboutSourceCode, .supportWebsite])
         }
         let sponsors = self == .about && !Distribution.isAppStore ? [L(.sponsorTitle)] + Sponsor.allCases.map(\.title) : []
         return ([title, subtitle] + settings.map(L) + sponsors).joined(separator: " ")
