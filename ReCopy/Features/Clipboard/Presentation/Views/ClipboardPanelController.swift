@@ -403,9 +403,9 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
             guard let images = special.converted() else { return ToastPresenter.shared.show(L(.pasteSpecialFailed)) }
             guard session.writeConverted(images, format: special.options.format, for: special.items, pasting: pastes) else { return }
         } else if let special = model.mediaPasteSpecial {
-            return special.start(in: session.emptyPasteSpecialFolder) { [weak self, weak session] file in
-                guard let self, let session, model.mediaPasteSpecial === special else { return }
-                session.writeFiles([file], for: [special.item], pasting: pastes)
+            return special.start { [weak self, weak session] file in
+                guard let self, let session, model.mediaPasteSpecial === special,
+                      session.writeExported(file, for: special.item, pasting: pastes) else { return }
                 closePasteSpecial(pasting: pasting, pastes: pastes)
             }
         } else {
@@ -511,6 +511,12 @@ extension ClipboardPanelController {
             guard let self else { return }
             guard readable else {
                 if model.mediaPasteSpecial === special { model.mediaPasteSpecial = nil }
+                // Opened from the global shortcut with no window to close: give the keyboard back here.
+                if !isOpen, let previousApp, !previousApp.isTerminated {
+                    NSApp.yieldActivation(to: previousApp)
+                    previousApp.activate(from: .current)
+                    self.previousApp = nil
+                }
                 return ToastPresenter.shared.show(L(.pasteSpecialMediaFailed))
             }
             guard model.mediaPasteSpecial === special else { return }

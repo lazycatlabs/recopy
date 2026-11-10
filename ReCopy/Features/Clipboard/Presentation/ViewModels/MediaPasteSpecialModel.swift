@@ -80,18 +80,21 @@ final class MediaPasteSpecialModel {
         }
     }
 
-    /// Exports with the chosen options into Paste Special's folder, then hands the file to `done`. Does nothing while
-    /// an export runs; a failure is shown in the sheet.
-    func start(in folder: @escaping () throws -> URL, done: @escaping (URL) -> Void) {
+    /// Exports with the chosen options into a folder of its own, then hands the file to `done`. The files already on
+    /// the clipboard stay until then, so a failed or cancelled export leaves them alone. Does nothing while an export
+    /// runs; a failure is shown in the sheet.
+    func start(done: @escaping (URL) -> Void) {
         guard !isExporting, let info else { return }
         hasFailed = false
         progress = 0
         let source = url, kind = kind, video = video, audio = audio
         let name = (url.lastPathComponent as NSString).deletingPathExtension
+        let staging = FileManager.default.temporaryDirectory.appending(path: "PasteSpecialExport-\(UUID().uuidString)")
         export = Task {
             do {
+                try FileManager.default.createDirectory(at: staging, withIntermediateDirectories: true)
                 let ext = kind == .video ? video.container.rawValue : audio.fileExtension
-                let output = try folder().appending(path: name).appendingPathExtension(ext)
+                let output = staging.appending(path: name).appendingPathExtension(ext)
                 let report: @Sendable (Double) -> Void = { value in
                     Task { @MainActor in self.report(value) }
                 }
@@ -103,8 +106,10 @@ final class MediaPasteSpecialModel {
                 progress = nil
                 done(output)
             } catch is CancellationError {
+                try? FileManager.default.removeItem(at: staging)
                 progress = nil
             } catch {
+                try? FileManager.default.removeItem(at: staging)
                 Log.storage.error("Paste Special export failed: \(error.localizedDescription, privacy: .public)")
                 progress = nil
                 hasFailed = !Task.isCancelled

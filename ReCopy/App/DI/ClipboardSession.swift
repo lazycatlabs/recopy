@@ -230,6 +230,24 @@ final class ClipboardSession {
         return folder
     }
 
+    /// Moves a file Paste Special exported elsewhere into its folder (replacing the previous files only now that the new
+    /// one is ready) and puts it on the clipboard.
+    /// - Returns: whether it's on the clipboard; a failed move is reported to the user.
+    @discardableResult
+    func writeExported(_ file: URL, for item: ClipItem, pasting: Bool) -> Bool {
+        defer { try? FileManager.default.removeItem(at: file.deletingLastPathComponent()) }
+        do {
+            let url = try emptyPasteSpecialFolder().appending(path: file.lastPathComponent)
+            try FileManager.default.moveItem(at: file, to: url)
+            writeFiles([url], for: [item], pasting: pasting)
+            return true
+        } catch {
+            Log.storage.error("Paste Special write failed: \(error.localizedDescription, privacy: .public)")
+            NSApp.presentError(error)
+            return false
+        }
+    }
+
     /// Puts files Paste Special made on the clipboard and counts a paste or a copy of the entries they came from.
     func writeFiles(_ urls: [URL], for items: [ClipItem], pasting: Bool) {
         pasteboard.write(.files(urls))
