@@ -13,6 +13,7 @@ final class MacAppDelegate: NSObject, NSApplicationDelegate {
     }()
     private(set) lazy var panel = ClipboardPanelController(container: container)
     private var hotKeys: [GlobalHotKey] = []
+    private var pasteWatcher: Any?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         panel.showSettings = { [weak self] in self?.showSettings() }
@@ -27,6 +28,7 @@ final class MacAppDelegate: NSObject, NSApplicationDelegate {
         if E2EMode.isActive { return E2EFixtures.start(self) }
         #endif
         registerHotKeys()
+        pasteWatcher = PasteSimulator.watchPastes { [weak self] in self?.container.session?.userPasted() ?? UsageStats.pastes.record() }
         HotKeyStore.shared.onChange = { [weak self] in self?.registerHotKeys() }
         if container.session == nil { showWelcome() }
     }

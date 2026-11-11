@@ -26,9 +26,13 @@ final class ClipboardSession {
 
     @ObservationIgnored let repository: ClipRepository
     @ObservationIgnored let pasteboard: SystemPasteboard
+    /// Where copies are counted; nil (as in unit tests) counts nothing.
+    @ObservationIgnored private let copies: UsageStats?
 
-    init(root: URL, repository: ClipRepository? = nil, pasteboard: SystemPasteboard = SystemPasteboard()) {
+    init(root: URL, repository: ClipRepository? = nil, pasteboard: SystemPasteboard = SystemPasteboard(),
+         copies: UsageStats? = nil) {
         self.pasteboard = pasteboard
+        self.copies = copies
         self.root = root
         let repository = repository ?? FileClipRepository(root: root)
         self.repository = repository
@@ -60,7 +64,7 @@ final class ClipboardSession {
         guard !isPaused else { return }
         if let bundleID = capture.sourceBundleID, settings.ignoredApps.contains(where: { $0.bundleID == bundleID }) { return }
         guard let item = record(capture) else { return }
-        SoundPlayer.play(settings.copySound)
+        copied()
         announce(L(.toastCopied(toastTitle(item))))
     }
 
@@ -121,14 +125,14 @@ final class ClipboardSession {
     func addImage(_ png: Data, width: Int, height: Int) -> ClipItem? {
         guard let item = record(Capture(content: .image(png: png, width: width, height: height), sourceName: "ReCopy")) else { return nil }
         write(item)
-        SoundPlayer.play(settings.copySound)
+        copied()
         return item
     }
 
     /// Puts an image made in ReCopy (an annotated copy) on the clipboard without keeping it as an entry.
     func copyImage(_ png: Data) {
         pasteboard.write(.png(png))
-        SoundPlayer.play(settings.copySound)
+        copied()
         announce(L(.toastImageCopied))
     }
 
@@ -138,7 +142,7 @@ final class ClipboardSession {
     func copy(_ item: ClipItem, as text: String? = nil) {
         write(item, as: text)
         save(ClipUseCases.markCopied(item))
-        SoundPlayer.play(settings.copySound)
+        copied()
         announce(L(.toastCopied(toastTitle(item))))
     }
 
@@ -164,7 +168,7 @@ final class ClipboardSession {
             }))
         }
         for item in items { save(ClipUseCases.markCopied(item)) }
-        SoundPlayer.play(settings.copySound)
+        copied()
         announce(L(.toastCopiedMany(items.count)))
     }
 
@@ -288,12 +292,24 @@ final class ClipboardSession {
     }
 
     private func announceUse(of items: [ClipItem], pasting: Bool) {
-        SoundPlayer.play(pasting ? settings.pasteSound : settings.copySound)
+        if pasting { SoundPlayer.play(settings.pasteSound) } else { copied() }
         if let item = items.first, items.count == 1 {
             announce(pasting ? L(.toastPasted(toastTitle(item))) : L(.toastCopied(toastTitle(item))))
         } else {
             announce(pasting ? L(.toastPastedMany(items.count)) : L(.toastCopiedMany(items.count)))
         }
+    }
+
+    /// A copy made: counted, with its sound.
+    private func copied() {
+        copies?.record()
+        SoundPlayer.play(settings.copySound)
+    }
+
+    /// The user pressed ⌘V in another app: counted, with the paste sound. ReCopy's own ⌘V is counted where it's sent.
+    func userPasted() {
+        UsageStats.pastes.record()
+        SoundPlayer.play(settings.pasteSound)
     }
 
     /// The entry's title, cut short for a toast.

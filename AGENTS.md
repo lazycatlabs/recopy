@@ -17,7 +17,7 @@ protocol-driven repositories, async/await, Swift Testing.
 | Project | Xcode project with synchronized folders (new files are picked up automatically). No Swift packages. |
 | Targets | `ReCopy` (app), `ReCopyTests` (Swift Testing, macOS host), `ReCopyUITests` (XCUITest E2E, `ReCopyE2E` scheme) |
 | Localization | `ReCopy/App/Resources/Localizable.xcstrings`, **generated** from `scripts/strings.py` (English, Indonesian) |
-| Storage | The user's vault folder (JSON, one file per entry). `UserDefaults` (through `AppDefaults.store`) only for per-Mac preferences: the vault bookmark, shortcuts (`HotKeyStore`), text size, the clipboard window position (`PanelPlacement`) and the paste count (`PasteStats`). |
+| Storage | The user's vault folder (JSON, one file per entry). `UserDefaults` (through `AppDefaults.store`) only for per-Mac preferences: the vault bookmark, shortcuts (`HotKeyStore`), text size, the clipboard window position (`PanelPlacement`) and the paste and copy counts (`UsageStats`). |
 | Network | LinkPresentation, to fetch a copied link's title, favicon and preview image; and GitHub's releases API when Settings › Updates is opened (`GitHubReleasesDataSource`). |
 | Support | Feedback and bug reports go to `help.me@lazycatlabs.com` (`SupportLinks`); website `https://recopy.lazycatlabs.com`. |
 | Commits | Conventional Commits, one commit per change. No AI co-author lines. |

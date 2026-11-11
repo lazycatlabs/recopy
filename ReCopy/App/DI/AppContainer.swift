@@ -17,14 +17,14 @@ final class AppContainer {
     init(vaults: VaultRepository = UserDefaultsVaultRepository(), pasteboard: @escaping () -> SystemPasteboard = { SystemPasteboard() }) {
         self.vaults = vaults
         makePasteboard = pasteboard
-        if let url = vaults.resolveVault() { session = ClipboardSession(root: url, pasteboard: pasteboard()) }
+        if let url = vaults.resolveVault() { session = ClipboardSession(root: url, pasteboard: pasteboard(), copies: .copies) }
         session?.onToast = { [weak self] in self?.onToast?($0) }
     }
 
     func open(_ url: URL) {
         do {
             try vaults.prepare(url)
-            session = ClipboardSession(root: url, pasteboard: makePasteboard())
+            session = ClipboardSession(root: url, pasteboard: makePasteboard(), copies: .copies)
         } catch {
             errorMessage = error.localizedDescription
         }
