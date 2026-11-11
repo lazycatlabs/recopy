@@ -34,7 +34,7 @@ enum PasteSimulator {
     static func watchPastes(_ onPaste: @escaping () -> Void) -> Any? {
         NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
             guard event.keyCode == kVK_ANSI_V, !event.isARepeat,
-                  event.modifierFlags.intersection(.deviceIndependentFlagsMask) == .command,
+                  event.modifierFlags.intersection([.command, .shift, .control, .option]) == .command,
                   event.cgEvent?.getIntegerValueField(.eventSourceUserData) != marker else { return }
             onPaste()
         }
