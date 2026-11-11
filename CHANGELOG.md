@@ -3,6 +3,20 @@
 What changed in each version of ReCopy (called Copaste before). The newest version is first. Each version's section is also the text for
 its GitHub release (tag `vX.Y.Z`).
 
+## 0.14.0 — 2026-11-11
+
+### New
+
+- **Copy Count** in Settings › Pasting, under Paste Count: how many times you copied today, this month and in all,
+  with your daily average. Copies made in other apps and in ReCopy both count.
+
+### Fixed
+
+- **Paste Count now counts every paste.** Pressing ⌘V yourself counts too: right after copying something, or after
+  copying an entry from the clipboard window. Before, only the pastes ReCopy sent were counted. Needs Accessibility,
+  like pasting from ReCopy.
+- The paste sound now plays for every ⌘V, not only for pastes sent by ReCopy.
+
 ## 0.13.0 — 2026-11-10
 
 ### New
