@@ -129,10 +129,9 @@ final class ClipboardSession {
         return item
     }
 
-    /// Puts an image made in ReCopy (an annotated copy) on the clipboard without keeping it as an entry.
-    func copyImage(_ png: Data) {
-        pasteboard.write(.png(png))
-        copied()
+    /// Adds an image made in ReCopy (an annotated copy) as a new entry, puts it on the clipboard and confirms with a toast.
+    func copyImage(_ png: Data, width: Int, height: Int) {
+        guard addImage(png, width: width, height: height) != nil else { return }
         announce(L(.toastImageCopied))
     }
 

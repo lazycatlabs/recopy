@@ -488,8 +488,8 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
                 DispatchQueue.main.asyncAfter(deadline: .now() + Metrics.Annotate.reopenDelay) {
                     self?.show(selecting: saved?.id, toast: L(.toastAnnotated))
                 }
-            } onCopy: { png in
-                session.copyImage(png)
+            } onCopy: { png, width, height in
+                session.copyImage(png, width: width, height: height)
                 MacWindows.close(id: "annotate")
             } onCancel: {
                 MacWindows.close(id: "annotate")
