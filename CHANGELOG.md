@@ -3,6 +3,13 @@
 What changed in each version of ReCopy (called Copaste before). The newest version is first. Each version's section is also the text for
 its GitHub release (tag `vX.Y.Z`).
 
+## 0.14.1 — 2026-11-18
+
+### Fixed
+
+- **Copying an annotated image now keeps it in your history.** Copy in the annotation editor put the image on the
+  clipboard but left it out of the clipboard history. It's now saved as a new entry too, like Save as New Entry.
+
 ## 0.14.0 — 2026-11-11
 
 ### New
