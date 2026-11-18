@@ -183,6 +183,13 @@ final class ReCopyE2ETests: XCTestCase {
             attachment.lifetime = .keepAlways
             add(attachment)
         }
+
+        // The copy is kept in the history too, next to the sample image it was made from.
+        send("panel")
+        let imageRows = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "identifier BEGINSWITH 'row' AND (label CONTAINS 'Image (' OR value CONTAINS 'Image (')"))
+        XCTAssertTrue(waitUntil { imageRows.count == 2 }, "The annotated copy is a new entry in the history")
+        screenshot(panel, "14a-copied-annotation-in-history")
     }
 
     func test09bAnnotateMovesAndResizesMarks() {
