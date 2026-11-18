@@ -129,10 +129,13 @@ final class ClipboardSession {
         return item
     }
 
-    /// Puts an image made in ReCopy (an annotated copy) on the clipboard without keeping it as an entry.
-    func copyImage(_ png: Data) {
-        pasteboard.write(.png(png))
-        copied()
+    /// Adds an image made in ReCopy (an annotated copy) as a new entry, puts it on the clipboard and confirms with a toast.
+    /// If the vault can't keep it (already reported), it's still copied, so the annotation isn't lost.
+    func copyImage(_ png: Data, width: Int, height: Int) {
+        if addImage(png, width: width, height: height) == nil {
+            pasteboard.write(.png(png))
+            copied()
+        }
         announce(L(.toastImageCopied))
     }
 

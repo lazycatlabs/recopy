@@ -40,6 +40,23 @@ struct ClipboardSessionTests {
         #expect(session.blobURL(item.blob).map { FileManager.default.fileExists(atPath: $0.path) } == true)
     }
 
+    @Test func copiedAnnotationBecomesANewEntryOnTheClipboard() throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let clipboard = NSPasteboard(name: .init(UUID().uuidString))
+        let session = ClipboardSession(root: root, pasteboard: SystemPasteboard(pasteboard: clipboard))
+        let image = NSImage(size: NSSize(width: 4, height: 4), flipped: false) { rect in
+            NSColor.red.setFill()
+            rect.fill()
+            return true
+        }
+        let png = try #require(image.pngRepresentation)
+        session.copyImage(png, width: 4, height: 4)
+        let item = try #require(session.items.first)
+        #expect(item.kind == .image)
+        #expect(NSImage(pasteboard: clipboard) != nil)
+    }
+
     @Test func formattedTextIsCopiedAndBecomesTheLatestEntry() throws {
         let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: root) }

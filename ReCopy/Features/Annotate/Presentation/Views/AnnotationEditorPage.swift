@@ -6,8 +6,9 @@ struct AnnotationEditorPage: View {
     let image: NSImage
     /// Called with the annotated image as PNG, and its size in pixels.
     let onDone: (Data, Int, Int) -> Void
-    /// Called with the annotated image as PNG, to put it on the clipboard without keeping it as an entry.
-    let onCopy: (Data) -> Void
+    /// Called with the annotated image as PNG and its size in pixels, to keep it as an entry and put it on the clipboard
+    /// without reopening the clipboard window.
+    let onCopy: (Data, Int, Int) -> Void
     let onCancel: () -> Void
 
     private static let palette: [Color] = [.red, .orange, .yellow, .green, .blue, .purple, .black, .white]
@@ -318,7 +319,7 @@ struct AnnotationEditorPage: View {
             }
             Button(L(.actionCopy)) {
                 commitText()
-                if let (png, _, _) = render() { onCopy(png) }
+                if let (png, width, height) = render() { onCopy(png, width, height) }
             }
             .keyboardShortcut(typing == nil ? KeyboardShortcut("c") : nil)
             .accessibilityIdentifier("annotate.copy")
