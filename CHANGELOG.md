@@ -3,6 +3,14 @@
 What changed in each version of ReCopy (called Copaste before). The newest version is first. Each version's section is also the text for
 its GitHub release (tag `vX.Y.Z`).
 
+## 0.14.2 — 2026-11-21
+
+### Changed
+
+- **Mac App Store version: choosing an entry copies it.** You paste it with ⌘V yourself. App Review doesn't allow the
+  Accessibility permission for pasting, so this version no longer asks for it. The version from GitHub and Homebrew
+  still pastes for you.
+
 ## 0.14.1 — 2026-11-18
 
 ### Fixed
