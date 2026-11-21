@@ -3,11 +3,15 @@ import ApplicationServices
 import Carbon.HIToolbox
 
 /// Pastes into the app in front by sending ⌘V, which needs the Accessibility permission.
+/// App Review (guideline 2.4.5) doesn't allow Accessibility for pasting, so the App Store build never asks for it
+/// and only copies.
 enum PasteSimulator {
-    static var isTrusted: Bool { AXIsProcessTrusted() }
+    static let isAvailable = !Distribution.isAppStore
+    static var isTrusted: Bool { isAvailable && AXIsProcessTrusted() }
 
     /// Shows the system prompt that leads to System Settings › Privacy & Security › Accessibility.
     static func requestAccess() {
+        guard isAvailable else { return }
         AXIsProcessTrustedWithOptions(["AXTrustedCheckOptionPrompt": true] as CFDictionary)
     }
 
@@ -32,7 +36,8 @@ enum PasteSimulator {
     /// Calls `onPaste` for each ⌘V the user presses in another app, e.g. right after copying or after copying an
     /// entry from the clipboard window. Needs Accessibility, like sending ⌘V; without it nothing is reported.
     static func watchPastes(_ onPaste: @escaping () -> Void) -> Any? {
-        NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
+        guard isAvailable else { return nil }
+        return NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
             guard event.keyCode == kVK_ANSI_V, !event.isARepeat,
                   event.modifierFlags.intersection([.command, .shift, .control, .option]) == .command,
                   event.cgEvent?.getIntegerValueField(.eventSourceUserData) != marker else { return }

@@ -63,7 +63,7 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
         let view = ClipboardPage(model: model) { [weak self] action, item in
             self?.perform(action, on: item)
         } performMany: { [weak self] items in
-            if session.settings.pasteDirectly { self?.paste(items) } else { self?.copy(items) }
+            if session.settings.pastesDirectly { self?.paste(items) } else { self?.copy(items) }
         } onDrag: { [weak self] ended in
             self?.drag(ended: ended)
         } manageGroups: { [weak self] in
@@ -204,7 +204,7 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
            let key = event.charactersIgnoringModifiers {
             if let number = Int(key), (1...Metrics.Panel.quickPasteCount).contains(number) {
                 let visible = model.visibleItems(of: session)
-                if number <= visible.count { perform(session.settings.pasteDirectly ? .paste : .copy, on: visible[number - 1]) }
+                if number <= visible.count { perform(session.settings.pastesDirectly ? .paste : .copy, on: visible[number - 1]) }
                 return true
             }
             if key == "," {
@@ -255,7 +255,7 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
         }
         if chosen.count > 1, shortcut == .pasteSpecial { return pasteSpecial(chosen, session: session) }
         let selected = chosen.first ?? selected
-        if shortcut == .paste { return perform(session.settings.pasteDirectly ? .paste : .copy, on: selected) }
+        if shortcut == .paste { return perform(session.settings.pastesDirectly ? .paste : .copy, on: selected) }
         if let action = ClipAction.available(for: selected).first(where: { $0.shortcut == shortcut }) {
             perform(action, on: selected)
         }
@@ -305,7 +305,7 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
 
     /// Puts the entry on the clipboard, gives the previous app the focus back and sends ⌘V.
     private func paste(_ item: ClipItem, session: ClipboardSession) {
-        guard session.settings.pasteDirectly else {
+        guard session.settings.pastesDirectly else {
             session.copy(item)
             return hide()
         }
@@ -430,9 +430,9 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
     /// them, each entry gets its own ⌘V. Without paste access they're copied instead.
     func paste(_ items: [ClipItem]) {
         guard let session else { return }
-        guard session.settings.pasteDirectly, PasteSimulator.isTrusted else {
+        guard session.settings.pastesDirectly, PasteSimulator.isTrusted else {
             copy(items)
-            if session.settings.pasteDirectly { PasteSimulator.requestAccess() }
+            if session.settings.pastesDirectly { PasteSimulator.requestAccess() }
             return
         }
         let target = previousApp

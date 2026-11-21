@@ -27,6 +27,7 @@ struct PasteSpecialButtons: View {
             button(L(.actionPaste), keys: HotKeyStore.shared[.paste].keys) { finish(true) }
                 .buttonStyle(.borderedProminent)
                 .accessibilityIdentifier("pasteSpecial.paste")
+                .hiddenInAppStore()
         }
     }
 
