@@ -63,8 +63,8 @@ atau iklan.
 
 ## Izin
 
-- **Aksesibilitas** (opsional) memungkinkan ReCopy menekan ⌘V untuk Anda di app yang sedang dipakai setelah Anda
-  memilih entri. Izin ini tidak dipakai untuk membaca isi app lain.
+- **Aksesibilitas** (opsional, tidak ada di versi Mac App Store) memungkinkan ReCopy menekan ⌘V untuk Anda di app
+  yang sedang dipakai setelah Anda memilih entri. Izin ini tidak dipakai untuk membaca isi app lain.
 
 ## Anak-anak
 
