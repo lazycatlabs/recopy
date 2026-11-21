@@ -23,8 +23,8 @@ The short version: **ReCopy does not collect any data.** We have no servers, acc
 
 ## Permissions
 
-- **Accessibility** (optional) lets ReCopy press ⌘V for you in the app you were using after you pick an entry. It is
-  not used to read other apps' content.
+- **Accessibility** (optional, not in the Mac App Store version) lets ReCopy press ⌘V for you in the app you were
+  using after you pick an entry. It is not used to read other apps' content.
 
 ## Children
 

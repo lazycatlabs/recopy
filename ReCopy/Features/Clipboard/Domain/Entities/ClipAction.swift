@@ -8,7 +8,7 @@ nonisolated enum ClipAction: String, CaseIterable, Identifiable, Sendable {
     var id: String { rawValue }
 
     static func available(for item: ClipItem) -> [ClipAction] {
-        var actions: [ClipAction] = [.paste, .copy]
+        var actions: [ClipAction] = Distribution.isAppStore ? [.copy] : [.paste, .copy]
         if item.isConvertibleImage || item.kind == .text || item.convertibleMedia != nil { actions.append(.pasteSpecial) }
         switch item.kind {
         case .link: actions.append(.open)

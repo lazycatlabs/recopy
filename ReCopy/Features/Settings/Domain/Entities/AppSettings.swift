@@ -57,6 +57,8 @@ nonisolated struct AppSettings: Codable, Equatable, Sendable {
     var fetchLinkPreviews = true
     /// Paste into the app in front when an entry is chosen, instead of only copying it.
     var pasteDirectly = true
+    /// `pasteDirectly` where pasting exists: the App Store build only copies (see `PasteSimulator`).
+    var pastesDirectly: Bool { pasteDirectly && !Distribution.isAppStore }
     /// Save items copied on an iPhone, iPad or another Mac (Universal Clipboard) as soon as they arrive.
     var saveUniversalClipboard = true
     /// A short confirmation on screen after copying or pasting.

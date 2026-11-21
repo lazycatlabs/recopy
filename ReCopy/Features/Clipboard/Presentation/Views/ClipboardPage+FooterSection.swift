@@ -17,7 +17,7 @@ extension ClipboardPage {
                 Spacer()
                 let chosen = model.chosen(in: session)
                 if let item = chosen.first {
-                    let primary: ClipAction = session.settings.pasteDirectly ? .paste : .copy
+                    let primary: ClipAction = session.settings.pastesDirectly ? .paste : .copy
                     let shortcuts = HotKeyStore.shared
                     if chosen.count > 1 {
                         let title = primary == .paste ? L(.actionPasteMany(chosen.count)) : L(.actionCopyMany(chosen.count))

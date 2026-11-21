@@ -1,6 +1,6 @@
 Salin sekali, tempel kapan saja.
 
-ReCopy adalah riwayat clipboard di menu bar. Tekan Shift-Command-V di mana saja, temukan yang pernah Anda salin, lalu tempel langsung ke app yang sedang Anda pakai.
+ReCopy adalah riwayat clipboard di menu bar. Tekan Shift-Command-V di mana saja, temukan yang pernah Anda salin, lalu salin lagi untuk ditempel di mana saja.
 
 MENGENALI YANG ANDA SALIN
 Teks, tautan, alamat e-mail, warna (HEX, RGB, HSL), gambar dan file, masing-masing dengan ikonnya sendiri. Saring menurut jenis atau hari disalin.
@@ -13,7 +13,7 @@ FITUR
 • Teks di screenshot yang disalin dikenali di Mac Anda, jadi bisa dicari
 • Sematkan entri agar selalu di atas
 • Bagian per waktu: Hari Ini, Kemarin, Minggu Ini, Bulan Ini dan per bulan
-• Detail: app sumber, jumlah karakter dan kata, ukuran gambar, berapa kali disalin dan ditempel
+• Detail: app sumber, jumlah karakter dan kata, ukuran gambar, berapa kali disalin
 • Anotasi, potong dan putar gambar
 • Aksi per jenis: buka tautan, tulis e-mail, salin warna sebagai HEX, RGB atau HSL, simpan ke file
 • Impor dari Raycast
@@ -22,6 +22,4 @@ PRIVAT SEJAK AWAL
 Kata sandi yang ditandai rahasia oleh app tidak pernah dicatat, dan Anda bisa mengabaikan app tertentu. Passwords dan Keychain Access diabaikan sejak awal.
 
 ATUR SESUKA ANDA
-Ganti pintasan, simpan riwayat dari sehari sampai selamanya, ukuran teks, suara salin dan tempel, serta buka saat login.
-
-Menempel langsung ke app lain memerlukan izin Aksesibilitas. Tanpa izin itu, ReCopy menyalin entri dan Anda menekan Command-V sendiri.
+Ganti pintasan, simpan riwayat dari sehari sampai selamanya, ukuran teks, suara salin, serta buka saat login.

@@ -15,6 +15,7 @@ struct PastingSettingsPage: View {
                 }
             }
         }
+        .hiddenInAppStore()
         SettingsGroup(L(.settingsSounds)) {
             SettingsRow(L(.settingsCopySound), symbol: "speaker.wave.2") {
                 soundPicker(L(.settingsCopySound), $session.settings.copySound)
@@ -22,9 +23,11 @@ struct PastingSettingsPage: View {
             SettingsRow(L(.settingsPasteSound), symbol: "speaker.wave.3") {
                 soundPicker(L(.settingsPasteSound), $session.settings.pasteSound)
             }
+            .hiddenInAppStore()
         }
         StatsSection(stats: .pastes, title: L(.pasteStatsTitle), id: "pasteStats",
                      footerText: { L(.pasteStatsFooter($0, $1)) }, emptyText: L(.pasteStatsEmpty))
+            .hiddenInAppStore()
         StatsSection(stats: .copies, title: L(.copyStatsTitle), id: "copyStats",
                      footerText: { L(.copyStatsFooter($0, $1)) }, emptyText: L(.copyStatsEmpty))
     }
