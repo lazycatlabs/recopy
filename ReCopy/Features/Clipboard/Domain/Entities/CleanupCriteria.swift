@@ -39,7 +39,7 @@ nonisolated enum CleanupPeriod: String, CaseIterable, Identifiable, Sendable {
     var startsOlderSection: Bool { self == .olderThanWeek }
 }
 
-/// The filters for deleting entries in bulk. The defaults (everything except pinned) match the old "Clear History".
+/// The filters for deleting entries in bulk. By default pinned entries, entries with a note and entries in a group are kept.
 nonisolated struct CleanupCriteria: Equatable, Sendable {
     var period = CleanupPeriod.anyTime
     /// Only this kind; nil for all.
@@ -47,6 +47,9 @@ nonisolated struct CleanupCriteria: Equatable, Sendable {
     /// Only entries in this group; nil for all.
     var group: UUID?
     var includePinned = false
+    var includeNoted = false
+    /// Ignored when `group` is set: picking a group includes its entries.
+    var includeGrouped = false
 }
 
 extension ClipUseCases {
@@ -56,7 +59,8 @@ extension ClipUseCases {
         items.filter { item in
             (criteria.includePinned || !item.pinned)
                 && (criteria.kind == nil || item.kind == criteria.kind)
-                && (criteria.group == nil || item.groupID == criteria.group)
+                && (criteria.includeNoted || (item.note ?? "").isEmpty)
+                && (criteria.group.map { item.groupID == $0 } ?? (criteria.includeGrouped || item.groupID == nil))
                 && criteria.period.contains(item.lastCopied, now: now, calendar: calendar)
         }
     }

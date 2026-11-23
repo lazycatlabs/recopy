@@ -1,7 +1,7 @@
 import SwiftUI
 
 extension HistorySettingsPage {
-    /// Settings › History › Delete Entries: removes entries by when they were last copied, type and group, with a live
+    /// Settings › History › Delete Entries: removes entries by when they were last copied, type, group, note and pin, with a live
     /// count and size of what would go, and a confirmation.
     struct DeleteEntriesSection: View {
         let session: ClipboardSession
@@ -48,6 +48,16 @@ extension HistorySettingsPage {
                 }
                 SettingsRow(L(.cleanupIncludePinned), symbol: "pin") {
                     SettingsToggle(L(.cleanupIncludePinned), isOn: $criteria.includePinned)
+                }
+                SettingsRow(L(.cleanupIncludeNoted), symbol: "note.text") {
+                    SettingsToggle(L(.cleanupIncludeNoted), isOn: $criteria.includeNoted)
+                        .accessibilityIdentifier("settings.cleanupIncludeNoted")
+                }
+                if !session.settings.groups.isEmpty && criteria.group == nil {
+                    SettingsRow(L(.cleanupIncludeGrouped), symbol: "folder.badge.minus") {
+                        SettingsToggle(L(.cleanupIncludeGrouped), isOn: $criteria.includeGrouped)
+                            .accessibilityIdentifier("settings.cleanupIncludeGrouped")
+                    }
                 }
                 SettingsRow(L(.cleanupMatches(matches.count)), symbol: "trash", subtitle: bytes.map(StorageSection.format)) {
                     Button(L(.cleanupDelete), role: .destructive) { confirms = true }
