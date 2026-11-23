@@ -71,15 +71,10 @@ extension HistorySettingsPage {
                 }
                 .accessibilityIdentifier("settings.cleanupMatches")
             }
-            .task(id: DeleteEntriesTaskKey(criteria: criteria, count: session.items.count)) {
+            // Re-measures when the matched entries change: a filter, a new entry, or a note, pin or group set on one.
+            .task(id: matches.map(\.id)) {
                 bytes = await session.storageSize(of: matches)
             }
         }
     }
-}
-
-/// Re-measures when the filters or the history change.
-private struct DeleteEntriesTaskKey: Equatable {
-    var criteria: CleanupCriteria
-    var count: Int
 }
