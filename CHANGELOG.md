@@ -3,6 +3,19 @@
 What changed in each version of ReCopy (called Copaste before). The newest version is first. Each version's section is also the text for
 its GitHub release (tag `vX.Y.Z`).
 
+## 0.15.0 — 2026-11-24
+
+### New
+
+- **Delete Entries keeps entries with a note or in a group.** Settings › History › Delete Entries has two new switches,
+  Include entries with a note and Include entries in a group. Both are off, so these entries stay, like pinned ones.
+  Choosing a group in Group still deletes that group's entries.
+
+### Fixed
+
+- **The size shown in Delete Entries stays up to date.** It used to keep the old size after you added a note, pinned
+  an entry or moved it to a group.
+
 ## 0.14.2 — 2026-11-21
 
 ### Changed
