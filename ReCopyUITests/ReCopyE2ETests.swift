@@ -976,3 +976,68 @@ final class ReCopyE2ETests: XCTestCase {
 private final class ResultBox<T>: @unchecked Sendable {
     var value: Result<T, Error>?
 }
+
+// Delete Entries' note and group filters. An extension, so the class body stays under SwiftLint's limit.
+extension ReCopyE2ETests {
+    func test14cDeletingKeepsNotedAndGroupedEntries() {
+        // Settings first, where test14 opens it, so it's on screen. Then a note on an entry; the sample vault
+        // already has two entries in Work.
+        launch(open: "settings")
+        let settings = app.windows["settings"]
+        XCTAssertTrue(settings.waitForExistence(timeout: timeout))
+        send("panel")
+        // Not the first entry: it's pinned, and pinned entries are kept anyway.
+        let hsl = row(containing: "hsl(211")
+        XCTAssertTrue(hsl.waitForExistence(timeout: timeout))
+        hsl.click()
+        let note = element("panel.note")
+        XCTAssertTrue(note.waitForExistence(timeout: timeout))
+        note.click()
+        note.typeText("keep me")
+        send("hide")
+        XCTAssertTrue(waitUntil { !self.panel.exists }, "The window closes")
+        send("settings")
+        openSettingsPage("history", in: settings)
+        let noted = settings.checkBoxes["settings.cleanupIncludeNoted"]
+        let grouped = settings.checkBoxes["settings.cleanupIncludeGrouped"]
+        reveal(grouped, in: settings)
+        let kept = matchCount(in: settings)
+        XCTAssertGreaterThan(kept, 0, "Reads the count")
+        screenshot(settings, "54-settings-delete-keeps-noted-and-grouped")
+
+        // Including them adds the noted entry and the two in Work.
+        noted.click()
+        grouped.click()
+        XCTAssertTrue(waitUntil { noted.value as? Int == 1 && grouped.value as? Int == 1 }, "Both switches are on")
+        XCTAssertTrue(waitUntil { self.matchCount(in: settings) == kept + 3 }, "Noted and grouped entries are included")
+        screenshot(settings, "55-settings-delete-includes-noted-and-grouped")
+
+        noted.click()
+        grouped.click()
+        XCTAssertTrue(waitUntil { self.matchCount(in: settings) == kept }, "Off again, they are kept")
+        settings.buttons["settings.cleanupDelete"].click()
+        let confirm = settings.buttons["Delete"].firstMatch
+        XCTAssertTrue(confirm.waitForExistence(timeout: timeout))
+        confirm.click()
+        XCTAssertTrue(waitUntil { self.matchCount(in: settings) == 0 }, "The rest is gone")
+
+        send("panel")
+        XCTAssertTrue(element("panel.search").waitForExistence(timeout: timeout))
+        XCTAssertTrue(row(containing: "Meeting moved").waitForExistence(timeout: timeout), "Entries in a group are kept")
+        XCTAssertTrue(row(containing: "admin@lazycatlabs.com").exists, "Entries in a group are kept")
+        XCTAssertFalse(row(containing: "#FF8C3C").exists, "Other entries are deleted")
+        screenshot(panel, "56-noted-and-grouped-entries-kept")
+        // Rows show a note only when the search matches it.
+        panel.typeText("keep me")
+        XCTAssertTrue(row(containing: "keep me").waitForExistence(timeout: timeout), "The noted entry is kept")
+    }
+
+    /// The number in Delete Entries' "N entries match", or -1 while it isn't shown.
+    private func matchCount(in settings: XCUIElement) -> Int {
+        // A static text's words are its value on macOS.
+        let text = settings.staticTexts
+            .matching(NSPredicate(format: "value MATCHES '^[0-9]+ entr(y|ies) match(es)?$'")).firstMatch
+        guard text.exists, let value = text.value as? String else { return -1 }
+        return Int(value.prefix { $0.isNumber }) ?? -1
+    }
+}

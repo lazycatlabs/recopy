@@ -10,11 +10,13 @@ struct CleanupCriteriaTests {
         return calendar
     }
 
-    private func item(_ text: String, kind: ClipKind = .text, daysAgo: Double, pinned: Bool = false, group: UUID? = nil) -> ClipItem {
+    private func item(_ text: String, kind: ClipKind = .text, daysAgo: Double, pinned: Bool = false, group: UUID? = nil,
+                      note: String? = nil) -> ClipItem {
         let date = now.addingTimeInterval(-daysAgo * 86_400)
         var item = ClipItem(kind: kind, text: text, hash: text, firstCopied: date, lastCopied: date)
         item.pinned = pinned
         item.groupID = group
+        item.note = note
         return item
     }
 
@@ -42,5 +44,15 @@ struct CleanupCriteriaTests {
         let items = [item("#FF0000", kind: .color, daysAgo: 1), item("note", daysAgo: 1, group: work), item("x", daysAgo: 1)]
         #expect(texts(CleanupCriteria(kind: .color), in: items) == ["#FF0000"])
         #expect(texts(CleanupCriteria(group: work), in: items) == ["note"])
+    }
+
+    @Test func keepsNotedAndGroupedUnlessIncluded() {
+        let work = UUID()
+        let items = [item("plain", daysAgo: 1), item("noted", daysAgo: 1, note: "keep"),
+                     item("grouped", daysAgo: 1, group: work), item("blank", daysAgo: 1, note: "")]
+        #expect(texts(CleanupCriteria(), in: items) == ["plain", "blank"])
+        #expect(texts(CleanupCriteria(includeNoted: true), in: items) == ["plain", "noted", "blank"])
+        #expect(texts(CleanupCriteria(includeGrouped: true), in: items) == ["plain", "grouped", "blank"])
+        #expect(texts(CleanupCriteria(group: work), in: items) == ["grouped"])
     }
 }

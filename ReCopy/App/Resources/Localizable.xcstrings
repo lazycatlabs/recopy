@@ -910,13 +910,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Deletes the entries that match all of these, from the vault on every device that syncs it. Pinned entries are kept unless you include them. This can't be undone."
+            "value": "Deletes the entries that match all of these, from the vault on every device that syncs it. Pinned entries, entries with a note and entries in a group are kept unless you include them. This can't be undone."
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Menghapus entri yang cocok dengan semua pilihan ini, dari vault di setiap perangkat yang menyinkronkannya. Entri yang disematkan tetap disimpan kecuali Anda ikutkan. Ini tidak bisa dibatalkan."
+            "value": "Menghapus entri yang cocok dengan semua pilihan ini, dari vault di setiap perangkat yang menyinkronkannya. Entri yang disematkan, yang memiliki catatan, dan yang ada di grup tetap disimpan kecuali Anda ikutkan. Ini tidak bisa dibatalkan."
           }
         }
       }
@@ -934,6 +934,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Grup"
+          }
+        }
+      }
+    },
+    "cleanupIncludeGrouped": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Include entries in a group"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ikutkan entri yang ada di grup"
+          }
+        }
+      }
+    },
+    "cleanupIncludeNoted": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Include entries with a note"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ikutkan entri yang memiliki catatan"
           }
         }
       }
